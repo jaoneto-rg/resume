@@ -44,6 +44,10 @@ No `hero-section.js`:
 - CSS usa variáveis (`:root` e `html[data-theme="dark"]`).
 - Botão no topo troca o tema e grava em `localStorage`.
 
+### 4.1) Padrões de ondas (moods)
+- Botão **“Ondas”** alterna variações do shader.
+- Os presets ficam no array `atmospheres` dentro de `assets/js/hero-section.js`.
+
 ### 5) Texto com efeito de digitação (duas linhas)
 - O título “I’m Frontend Developer” e “& Designer UI/UX” são digitados em sequência.
 - O JS controla o cursor ativo por linha.
