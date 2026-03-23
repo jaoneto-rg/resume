@@ -4,6 +4,7 @@
   --text-main: #11131a;
   --text-soft: #566070;
   --surface: rgba(255, 255, 255, 0.8);
+  --surface-strong: rgba(255, 255, 255, 0.92);
   --surface-border: rgba(255, 255, 255, 0.72);
   --button-bg: #11131a;
   --button-text: #f8fafc;
@@ -23,6 +24,7 @@ html[data-theme="dark"] {
   --text-main: #edf2ff;
   --text-soft: #a8bad8;
   --surface: rgba(10, 16, 30, 0.62);
+  --surface-strong: rgba(10, 16, 30, 0.82);
   --surface-border: rgba(123, 151, 199, 0.24);
   --button-bg: #edf2ff;
   --button-text: #101423;
@@ -265,6 +267,115 @@ main {
   font: 600 0.82rem/1 "Space Grotesk", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.projects-carousel {
+  margin-top: 2rem;
+  overflow: visible;
+  position: relative;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  padding: 0;
+}
+
+
+.carousel-track {
+  display: flex;
+  gap: clamp(0.8rem, 2vw, 1.6rem);
+  align-items: stretch;
+  transition: transform 280ms ease;
+  will-change: transform;
+}
+
+.carousel-card {
+  flex: 0 0 min(62%, 560px);
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 1.2rem;
+  box-shadow: var(--shadow);
+  padding: 1rem;
+  transform: scale(0.82);
+  opacity: 0.4;
+  transition: transform 260ms ease, opacity 260ms ease, z-index 260ms ease;
+}
+
+.carousel-card.is-center {
+  transform: scale(1);
+  opacity: 1;
+  z-index: 3;
+  background: var(--surface-strong);
+}
+
+.carousel-card.is-left,
+.carousel-card.is-right {
+  opacity: 0.32;
+  z-index: 2;
+}
+
+.carousel-card.is-left {
+  transform: scale(0.86) translateX(38%);
+}
+
+.carousel-card.is-right {
+  transform: scale(0.86) translateX(-38%);
+}
+
+.carousel-card.is-far {
+  opacity: 0.24;
+  transform: scale(0.72);
+  z-index: 1;
+}
+
+.carousel-media {
+  display: block;
+  border-radius: 0.9rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.carousel-media img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.carousel-media.placeholder {
+  height: 180px;
+  display: grid;
+  place-items: center;
+  font: 700 0.9rem/1 "Space Grotesk", sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.carousel-tech {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.carousel-body {
+  margin-top: 0.9rem;
+}
+
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.85rem;
+  font: 700 0.85rem/1 "Space Grotesk", sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-main);
+  text-decoration: none;
+}
+
+.projects-carousel.is-dragging {
+  cursor: grabbing;
 }
 
 .timeline {

@@ -194,6 +194,14 @@
         "projects.eyebrow": "Projetos",
         "projects.title": "Portfolio em Progresso",
         "projects.body": "Estou preparando meus projetos para publicacao. Enquanto isso, este espaco destaca as tecnologias que utilizo com mais frequencia.",
+        "projects.pokedex.body": "Projeto de Pokedex simples para praticar consumo de API externa e manipulacao do DOM. A aplicacao busca dados na PokeAPI e exibe nome, numero e sprite do Pokemon, alem de permitir navegar entre os registros.",
+        "projects.pokedex.live": "Acessar Projeto",
+        "projects.placeholder.title": "Em breve",
+        "projects.placeholder.name2": "Projeto 2",
+        "projects.placeholder.name3": "Projeto 3",
+        "projects.placeholder.name4": "Projeto 4",
+        "projects.placeholder.name5": "Projeto 5",
+        "projects.placeholder.body": "Novo projeto sendo preparado para entrar no portfolio.",
         "transition.about": "Sobre",
         "about.body": "Sou uma pessoa em constante evolucao, aprendo com facilidade e gosto de colaborar com o time para construir relacoes positivas e resultados solidos.",
         "contact.eyebrow": "Contato",
@@ -264,6 +272,14 @@
         "projects.eyebrow": "Projects",
         "projects.title": "Portfolio In Progress",
         "projects.body": "I'm preparing my projects for publication. For now, this section highlights the technologies I use most often.",
+        "projects.pokedex.body": "Simple Pokedex project built to practice consuming an external API and DOM manipulation. The app fetches data from PokeAPI and shows the Pokemon name, number, and sprite, plus navigation between entries.",
+        "projects.pokedex.live": "Acess Project",
+        "projects.placeholder.title": "Coming soon",
+        "projects.placeholder.name2": "Project 2",
+        "projects.placeholder.name3": "Project 3",
+        "projects.placeholder.name4": "Project 4",
+        "projects.placeholder.name5": "Project 5",
+        "projects.placeholder.body": "New project being prepared for the portfolio.",
         "transition.about": "About",
         "about.body": "I'm a person in constant evolution, I learn fast and enjoy collaborating with the team to build positive relationships and solid results.",
         "contact.eyebrow": "Contact",
@@ -460,11 +476,156 @@
       tick();
     }
 
+    function initProjectsCarousel() {
+      const carousel = document.querySelector(".projects-carousel");
+      if (!carousel) return;
+
+      const track = carousel.querySelector(".carousel-track");
+      if (!track) return;
+
+      const originals = Array.from(track.querySelectorAll(".carousel-card"));
+      if (!originals.length) return;
+
+      originals.forEach((card, index) => {
+        card.dataset.index = String(index);
+      });
+
+      const clonesBefore = originals.map((card) => {
+        const clone = card.cloneNode(true);
+        clone.dataset.clone = "before";
+        return clone;
+      });
+      const clonesAfter = originals.map((card) => {
+        const clone = card.cloneNode(true);
+        clone.dataset.clone = "after";
+        return clone;
+      });
+
+      track.prepend(...clonesBefore);
+      track.append(...clonesAfter);
+
+      let cards = Array.from(track.querySelectorAll(".carousel-card"));
+      const total = originals.length;
+
+      const pokedexIndex = originals.findIndex((card) =>
+        card.querySelector("h3")?.textContent?.trim().toUpperCase() === "POKEDEX"
+      );
+      let currentIndex = total + (pokedexIndex >= 0 ? pokedexIndex : Math.floor(total / 2));
+      let startX = 0;
+      let startTranslate = 0;
+      let currentTranslate = 0;
+      let isDragging = false;
+      let hasMoved = false;
+
+      function normalizeIndex(index) {
+        return ((index % total) + total) % total;
+      }
+
+      function updateCenter() {
+        const containerCenter = carousel.clientWidth / 2;
+        const activeCard = cards[currentIndex];
+        if (!activeCard) return;
+        const cardCenter = activeCard.offsetLeft + activeCard.offsetWidth / 2;
+        currentTranslate = containerCenter - cardCenter;
+        track.style.transform = `translateX(${currentTranslate}px)`;
+        cards.forEach((card, index) => {
+          const delta = index - currentIndex;
+          card.classList.toggle("is-center", delta === 0);
+          card.classList.toggle("is-left", delta === -1);
+          card.classList.toggle("is-right", delta === 1);
+          card.classList.toggle("is-far", Math.abs(delta) > 1);
+        });
+      }
+
+      function snapToClosest() {
+        const containerCenter = carousel.clientWidth / 2;
+        let closestIndex = currentIndex;
+        let closestDistance = Number.POSITIVE_INFINITY;
+
+        cards.forEach((card, index) => {
+          const cardCenter = card.offsetLeft + card.offsetWidth / 2 + currentTranslate;
+          const distance = Math.abs(containerCenter - cardCenter);
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+          }
+        });
+
+        currentIndex = closestIndex;
+        track.style.transition = "transform 280ms ease";
+        updateCenter();
+      }
+
+      function onPointerDown(event) {
+        if (event.target.closest("a")) return;
+        isDragging = true;
+        hasMoved = false;
+        carousel.classList.add("is-dragging");
+        track.style.transition = "none";
+        startX = event.clientX ?? 0;
+        startTranslate = currentTranslate;
+        carousel.setPointerCapture(event.pointerId);
+      }
+
+      function onPointerMove(event) {
+        if (!isDragging) return;
+        const delta = (event.clientX ?? 0) - startX;
+        if (Math.abs(delta) > 6) {
+          hasMoved = true;
+        }
+        currentTranslate = startTranslate + delta;
+        track.style.transform = `translateX(${currentTranslate}px)`;
+      }
+
+      function onPointerUp(event) {
+        if (!isDragging) return;
+        isDragging = false;
+        hasMoved = false;
+        carousel.classList.remove("is-dragging");
+        carousel.releasePointerCapture(event.pointerId);
+        snapToClosest();
+      }
+
+      carousel.addEventListener("pointerdown", onPointerDown);
+      carousel.addEventListener("pointermove", onPointerMove);
+      carousel.addEventListener("pointerup", onPointerUp);
+      carousel.addEventListener("pointerleave", onPointerUp);
+
+      cards.forEach((card) => {
+        card.addEventListener("click", () => {
+          if (hasMoved) return;
+          const rawIndex = Number(card.dataset.index ?? 0);
+          currentIndex = rawIndex + total;
+          track.style.transition = "transform 280ms ease";
+          updateCenter();
+        });
+      });
+
+      track.addEventListener("transitionend", () => {
+        if (currentIndex < total) {
+          currentIndex += total;
+          track.style.transition = "none";
+          updateCenter();
+        } else if (currentIndex >= total * 2) {
+          currentIndex -= total;
+          track.style.transition = "none";
+          updateCenter();
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        updateCenter();
+      });
+
+      updateCenter();
+    }
+
     initTheme();
     computeAge();
     setLang(localStorage.getItem("lang") || "pt");
     initWorld();
     startTypingAnimation();
+    initProjectsCarousel();
   }
 
   window.initHeroSection = initHeroSection;
