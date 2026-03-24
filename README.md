@@ -66,8 +66,34 @@ No `hero-section.js`:
 - **About**: foto + dados pessoais + descrição.
 - **Journey**: experiências alternadas esquerda/direita.
 - **Formação**: graduação, idiomas e certificados.
-- **Projetos**: placeholder com tecnologias.
+- **Projetos**: carrossel infinito com destaque no card principal.
 - **Contato**: cards simples (localização, telefone, email, links).
+
+## Projetos — Carrossel de Cards (roleta horizontal)
+
+O carrossel de projetos foi criado para destacar o card central e manter os demais “atrás”, com efeito de profundidade.
+
+### Estrutura do HTML
+No `index.html`:
+- A lista de cards fica em `.projects-carousel > .carousel-track`.
+- Cada card usa `.carousel-card` com imagem, techs e CTA.
+- Cards placeholders usam `.is-placeholder`.
+
+### Estilo do carrossel
+No `assets/css/hero-section.css`:
+- `.carousel-card.is-center` aumenta o card principal.
+- `.is-left`, `.is-right` e `.is-far` reduzem escala e opacidade.
+- O layout cria a sensação de camadas, como uma roleta.
+
+### Lógica de interação
+No `assets/js/hero-section.js`:
+- `initProjectsCarousel()` cria o carrossel.
+- Clona os cards antes/depois para simular **loop infinito**.
+- Arraste com mouse/toque move o carrossel.
+- Clique em um card lateral coloca ele no centro.
+- O card principal por padrão é o **POKEDEX**.
+
+Se quiser trocar o card principal inicial, basta alterar o título ou adicionar um identificador e ajustar no JS.
 
 ## Personalização rápida
 
