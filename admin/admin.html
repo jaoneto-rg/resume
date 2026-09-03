@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — João A. M. Neto</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/hero-section.css">
+  <link rel="stylesheet" href="./admin.css">
+</head>
+<body class="admin-body">
+
+  <section id="loginView" class="admin-card">
+    <h1>Login Admin</h1>
+    <form id="loginForm">
+      <label>Email
+        <input type="email" id="loginEmail" required autocomplete="username">
+      </label>
+      <label>Senha
+        <input type="password" id="loginPassword" required autocomplete="current-password">
+      </label>
+      <button type="submit" class="admin-btn admin-btn--primary">Entrar</button>
+    </form>
+    <p id="loginError" class="admin-error"></p>
+  </section>
+
+  <section id="dashboardView" class="admin-dashboard" hidden>
+    <header class="admin-header">
+      <h1>Painel Admin</h1>
+      <button id="logoutBtn" class="admin-btn">Sair</button>
+    </header>
+
+    <section class="admin-section">
+      <div class="admin-section-head">
+        <h2>Projetos</h2>
+        <button id="newProjectBtn" class="admin-btn admin-btn--primary">+ Novo projeto</button>
+      </div>
+      <div id="projectsList" class="admin-list"></div>
+    </section>
+
+    <section class="admin-section">
+      <div class="admin-section-head">
+        <h2>Experiências</h2>
+        <button id="newExperienceBtn" class="admin-btn admin-btn--primary">+ Nova experiência</button>
+      </div>
+      <div id="experiencesList" class="admin-list"></div>
+    </section>
+  </section>
+
+  <dialog id="projectDialog" class="admin-dialog">
+    <form id="projectForm" class="admin-form">
+      <h3 id="projectDialogTitle">Novo projeto</h3>
+      <input type="hidden" id="projectId">
+      <label>Título <input type="text" id="projectTitle" required></label>
+      <label>Descrição <textarea id="projectDescription" rows="4" required></textarea></label>
+      <label>Foto do projeto <input type="file" id="projectImageFile" accept="image/*"></label>
+      <p class="admin-hint">Ou cole uma URL de imagem já existente:</p>
+      <label>URL da imagem <input type="text" id="projectImageUrl" placeholder="https://..."></label>
+      <label>Techs (separadas por vírgula) <input type="text" id="projectTechs" placeholder="React, Node.js, Supabase"></label>
+      <label>Link ao vivo <input type="url" id="projectLiveUrl"></label>
+      <label>Link GitHub <input type="url" id="projectGithubUrl"></label>
+      <label>Ordem de exibição <input type="number" id="projectOrder" value="0"></label>
+      <label class="admin-checkbox"><input type="checkbox" id="projectPublished"> Publicado (visível no site)</label>
+      <p id="projectFormError" class="admin-error"></p>
+      <div class="admin-dialog-actions">
+        <button type="button" class="admin-btn" data-close>Cancelar</button>
+        <button type="submit" class="admin-btn admin-btn--primary">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="experienceDialog" class="admin-dialog">
+    <form id="experienceForm" class="admin-form">
+      <h3 id="experienceDialogTitle">Nova experiência</h3>
+      <input type="hidden" id="experienceId">
+      <label>Título <input type="text" id="experienceTitle" required placeholder="Empresa — Cargo"></label>
+      <label>Meta (período/local) <input type="text" id="experienceMeta" required placeholder="Jan/2026 - Atual · Remoto · Maceió/AL"></label>
+      <label>Descrição <textarea id="experienceBody" rows="4" required></textarea></label>
+      <label>Ordem de exibição <input type="number" id="experienceOrder" value="0"></label>
+      <label class="admin-checkbox"><input type="checkbox" id="experiencePublished" checked> Publicado (visível no site)</label>
+      <p id="experienceFormError" class="admin-error"></p>
+      <div class="admin-dialog-actions">
+        <button type="button" class="admin-btn" data-close>Cancelar</button>
+        <button type="submit" class="admin-btn admin-btn--primary">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase-config.js"></script>
+  <script src="./admin.js"></script>
+</body>
+</html>

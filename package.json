@@ -1,0 +1,9 @@
+{
+  "name": "resume-landing-page",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing page pessoal com hero WebGL + backend leve em Vercel Functions + Supabase",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}

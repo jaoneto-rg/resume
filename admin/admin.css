@@ -1,0 +1,188 @@
+.admin-body {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.admin-card {
+  width: min(100%, 380px);
+  margin-top: 10vh;
+  padding: 2rem;
+  background: var(--surface-strong);
+  border: 1px solid var(--surface-border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+
+.admin-card h1 {
+  font-family: "Space Grotesk", sans-serif;
+  margin-top: 0;
+}
+
+.admin-dashboard {
+  width: min(100%, 900px);
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.admin-section {
+  background: var(--surface-strong);
+  border: 1px solid var(--surface-border);
+  border-radius: 18px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.admin-list-item-info strong {
+  display: block;
+}
+
+.admin-list-item-info span {
+  color: var(--text-soft);
+  font-size: 0.85rem;
+}
+
+.admin-list-item-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.admin-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  margin-left: 0.5rem;
+}
+
+.admin-badge--published {
+  background: rgba(11, 107, 58, 0.15);
+  color: var(--accent-green);
+}
+
+.admin-badge--draft {
+  background: rgba(160, 160, 160, 0.2);
+  color: var(--text-soft);
+}
+
+.admin-btn {
+  font: 600 0.85rem/1 "Space Grotesk", sans-serif;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--button-ghost-border);
+  background: var(--button-ghost-bg);
+  color: var(--button-ghost-text);
+  cursor: pointer;
+}
+
+.admin-btn--primary {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border-color: var(--button-border);
+}
+
+.admin-btn--danger {
+  color: #d64545;
+  border-color: rgba(214, 69, 69, 0.4);
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.admin-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+
+.admin-form input[type="text"],
+.admin-form input[type="url"],
+.admin-form input[type="number"],
+.admin-form input[type="email"],
+.admin-form input[type="password"],
+.admin-form textarea {
+  font: 400 0.95rem/1.4 "Manrope", sans-serif;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--surface-border);
+  background: var(--bg-page);
+  color: var(--text-main);
+}
+
+.admin-checkbox {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.5rem !important;
+}
+
+.admin-hint {
+  font-size: 0.78rem;
+  color: var(--text-soft);
+  margin: -0.4rem 0 0;
+}
+
+.admin-dialog {
+  width: min(100%, 520px);
+  border: 1px solid var(--surface-border);
+  border-radius: 18px;
+  padding: 1.5rem;
+  background: var(--surface-strong);
+  color: var(--text-main);
+}
+
+.admin-dialog::backdrop {
+  background: rgba(7, 9, 16, 0.55);
+}
+
+.admin-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.admin-error {
+  color: #d64545;
+  font-size: 0.85rem;
+  min-height: 1em;
+}
