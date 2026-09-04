@@ -33,4 +33,19 @@ async function requireAdmin(req, res) {
   return data.user;
 }
 
-module.exports = { requireAdmin };
+// Versão silenciosa: não responde nada, só devolve o usuário admin (ou null).
+// Uso em rotas que aceitam tanto público quanto admin (ex: POST de comentários),
+// onde a ausência de um token válido não é um erro — só significa "é público mesmo".
+async function getAdminUserIfAny(req) {
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!token) return null;
+
+  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  if (error || !data?.user) return null;
+  if (!ADMIN_EMAIL || data.user.email !== ADMIN_EMAIL) return null;
+
+  return data.user;
+}
+
+module.exports = { requireAdmin, getAdminUserIfAny };

@@ -46,6 +46,14 @@
       </div>
       <div id="experiencesList" class="admin-list"></div>
     </section>
+
+    <section class="admin-section">
+      <div class="admin-section-head">
+        <h2>Comentários</h2>
+        <button id="newCommentBtn" class="admin-btn admin-btn--primary">+ Novo comentário</button>
+      </div>
+      <div id="commentsAdminList" class="admin-list"></div>
+    </section>
   </section>
 
   <dialog id="projectDialog" class="admin-dialog">
@@ -80,6 +88,24 @@
       <label>Ordem de exibição <input type="number" id="experienceOrder" value="0"></label>
       <label class="admin-checkbox"><input type="checkbox" id="experiencePublished" checked> Publicado (visível no site)</label>
       <p id="experienceFormError" class="admin-error"></p>
+      <div class="admin-dialog-actions">
+        <button type="button" class="admin-btn" data-close>Cancelar</button>
+        <button type="submit" class="admin-btn admin-btn--primary">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="commentDialog" class="admin-dialog">
+    <form id="commentForm" class="admin-form">
+      <h3 id="commentDialogTitle">Novo comentário</h3>
+      <input type="hidden" id="commentId">
+      <label>Nome <input type="text" id="commentName" required></label>
+      <label>Email <input type="email" id="commentEmail" required></label>
+      <label>Como conhece você <input type="text" id="commentRole" placeholder="Colega de trabalho, professor..."></label>
+      <label>Foto <input type="file" id="commentPhotoFile" accept="image/*"></label>
+      <label>Mensagem <textarea id="commentMessage" rows="4" maxlength="1000" required></textarea></label>
+      <label class="admin-checkbox"><input type="checkbox" id="commentApproved"> Publicado (visível no site)</label>
+      <p id="commentFormError" class="admin-error"></p>
       <div class="admin-dialog-actions">
         <button type="button" class="admin-btn" data-close>Cancelar</button>
         <button type="submit" class="admin-btn admin-btn--primary">Salvar</button>

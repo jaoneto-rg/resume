@@ -55,7 +55,7 @@
     if (currentSession) {
       loginView.hidden = true;
       dashboardView.hidden = false;
-      await Promise.all([loadProjects(), loadExperiences()]);
+      await Promise.all([loadProjects(), loadExperiences(), loadComments()]);
     } else {
       loginView.hidden = false;
       dashboardView.hidden = true;
@@ -285,6 +285,141 @@
     try {
       await authedFetch(`/api/experiences/${exp.id}`, { method: "DELETE" });
       await loadExperiences();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  // ---------- comments ----------
+
+  const commentsAdminList = document.getElementById("commentsAdminList");
+  const commentDialog = document.getElementById("commentDialog");
+  const commentForm = document.getElementById("commentForm");
+  const commentFormError = document.getElementById("commentFormError");
+
+  function compressImageToDataUrl(file, maxDimension) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = () => {
+        img.onload = () => {
+          const scale = Math.min(1, maxDimension / Math.max(img.width, img.height));
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL("image/jpeg", 0.82));
+        };
+        img.onerror = () => reject(new Error("Não foi possível processar a imagem."));
+        img.src = reader.result;
+      };
+      reader.onerror = () => reject(new Error("Não foi possível ler o arquivo."));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function loadComments() {
+    commentsAdminList.innerHTML = "Carregando...";
+    try {
+      const comments = await authedFetch("/api/comments?all=1");
+      commentsAdminList.innerHTML = "";
+      if (!comments.length) {
+        commentsAdminList.innerHTML = '<p class="admin-hint">Nenhum comentário ainda.</p>';
+        return;
+      }
+      comments.forEach((comment) => commentsAdminList.appendChild(renderCommentItem(comment)));
+    } catch (err) {
+      commentsAdminList.innerHTML = `<p class="admin-error">${err.message}</p>`;
+    }
+  }
+
+  function renderCommentItem(comment) {
+    const row = document.createElement("div");
+    row.className = "admin-list-item";
+    const originTag = comment.created_by_admin ? " · adicionado por você" : "";
+    row.innerHTML = `
+      <div class="admin-list-item-info">
+        <strong>${comment.name} ${badge(comment.approved)}</strong>
+        <span>${comment.role || "sem papel definido"}${originTag} — "${comment.message.slice(0, 60)}${comment.message.length > 60 ? "…" : ""}"</span>
+      </div>
+      <div class="admin-list-item-actions">
+        <button class="admin-btn" data-toggle>${comment.approved ? "Revogar" : "Aprovar"}</button>
+        <button class="admin-btn" data-edit>Editar</button>
+        <button class="admin-btn admin-btn--danger" data-delete>Excluir</button>
+      </div>
+    `;
+    row.querySelector("[data-toggle]").addEventListener("click", () => toggleCommentApproval(comment));
+    row.querySelector("[data-edit]").addEventListener("click", () => openCommentDialog(comment));
+    row.querySelector("[data-delete]").addEventListener("click", () => deleteComment(comment));
+    return row;
+  }
+
+  async function toggleCommentApproval(comment) {
+    try {
+      await authedFetch(`/api/comments/${comment.id}`, {
+        method: "PUT",
+        body: JSON.stringify({ approved: !comment.approved }),
+      });
+      await loadComments();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  function openCommentDialog(comment) {
+    commentFormError.textContent = "";
+    document.getElementById("commentDialogTitle").textContent = comment ? "Editar comentário" : "Novo comentário";
+    document.getElementById("commentId").value = comment?.id || "";
+    document.getElementById("commentName").value = comment?.name || "";
+    document.getElementById("commentEmail").value = comment?.email || "";
+    document.getElementById("commentRole").value = comment?.role || "";
+    document.getElementById("commentPhotoFile").value = "";
+    document.getElementById("commentMessage").value = comment?.message || "";
+    document.getElementById("commentApproved").checked = comment ? !!comment.approved : true;
+    commentDialog.showModal();
+  }
+
+  document.getElementById("newCommentBtn").addEventListener("click", () => openCommentDialog(null));
+
+  commentDialog.querySelectorAll("[data-close]").forEach((btn) =>
+    btn.addEventListener("click", () => commentDialog.close())
+  );
+
+  commentForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    commentFormError.textContent = "";
+    try {
+      const id = document.getElementById("commentId").value;
+      const photoFile = document.getElementById("commentPhotoFile").files?.[0];
+      const avatarDataUrl = photoFile ? await compressImageToDataUrl(photoFile, 400) : null;
+
+      const payload = {
+        name: document.getElementById("commentName").value.trim(),
+        email: document.getElementById("commentEmail").value.trim(),
+        role: document.getElementById("commentRole").value.trim(),
+        message: document.getElementById("commentMessage").value.trim(),
+        approved: document.getElementById("commentApproved").checked,
+      };
+      if (avatarDataUrl) payload.avatar_data_url = avatarDataUrl;
+
+      if (id) {
+        await authedFetch(`/api/comments/${id}`, { method: "PUT", body: JSON.stringify(payload) });
+      } else {
+        await authedFetch("/api/comments", { method: "POST", body: JSON.stringify(payload) });
+      }
+
+      commentDialog.close();
+      await loadComments();
+    } catch (err) {
+      commentFormError.textContent = err.message;
+    }
+  });
+
+  async function deleteComment(comment) {
+    if (!confirm(`Excluir o comentário de "${comment.name}"? Essa ação não pode ser desfeita.`)) return;
+    try {
+      await authedFetch(`/api/comments/${comment.id}`, { method: "DELETE" });
+      await loadComments();
     } catch (err) {
       alert(err.message);
     }

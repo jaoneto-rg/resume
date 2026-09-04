@@ -1,0 +1,114 @@
+.comments-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.comment-card {
+  display: flex;
+  gap: 0.85rem;
+  padding: 1.1rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.comment-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--surface-strong);
+}
+
+.comment-avatar-fallback {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--button-bg);
+  color: var(--button-text);
+  font-weight: 700;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.comment-body h4 {
+  margin: 0 0 0.1rem;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.comment-role {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
+
+.comment-message {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.comments-empty {
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+.comment-form-card {
+  max-width: 520px;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 0.75rem;
+}
+
+.comment-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+
+.comment-form input[type="text"],
+.comment-form input[type="email"],
+.comment-form input[type="file"],
+.comment-form textarea {
+  font: 400 0.95rem/1.4 "Manrope", sans-serif;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--surface-border);
+  background: var(--bg-page);
+  color: var(--text-main);
+}
+
+/* Honeypot — fica fora da tela, invisível pra humano, "visível" pra bot */
+.comment-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.comment-form-error {
+  color: #d64545;
+  font-size: 0.85rem;
+  min-height: 1em;
+  margin: 0;
+}
+
+.comment-form-success {
+  color: var(--accent-green, #0b6b3a);
+  font-size: 0.85rem;
+  min-height: 1em;
+  margin: 0;
+}
