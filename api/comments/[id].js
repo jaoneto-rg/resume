@@ -8,12 +8,15 @@ module.exports = async (req, res) => {
   if (!user) return;
 
   if (req.method === "PUT") {
-    const { name, email, role, message, approved, avatar_data_url } = req.body || {};
+    const { name, email, role, linkedin_url, message, approved, avatar_data_url } = req.body || {};
 
     const updates = {};
     if (name !== undefined) updates.name = name;
     if (email !== undefined) updates.email = email;
     if (role !== undefined) updates.role = role;
+    if (linkedin_url !== undefined) {
+      updates.linkedin_url = linkedin_url ? String(linkedin_url).trim() : null;
+    }
     if (message !== undefined) updates.message = message;
     if (approved !== undefined) updates.approved = !!approved;
 

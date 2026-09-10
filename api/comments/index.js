@@ -34,6 +34,7 @@ module.exports = async (req, res) => {
     const name = (body.name || "").trim();
     const email = (body.email || "").trim();
     const role = (body.role || "").trim();
+    const linkedinUrl = (body.linkedin_url || "").trim();
     const message = (body.message || "").trim();
 
     if (!name || !email || !message) {
@@ -61,6 +62,7 @@ module.exports = async (req, res) => {
       name,
       email,
       role: role || null,
+      linkedin_url: linkedinUrl || null,
       message,
       avatar_url: avatarUrl,
       // Só um admin autenticado pode publicar direto ou marcar como

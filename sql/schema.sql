@@ -47,11 +47,15 @@ create table if not exists comments (
   email text not null,
   avatar_url text,
   role text,                    -- ex: "Colega de trabalho", "Professor"
+  linkedin_url text,            -- link para o perfil do autor no LinkedIn (opcional)
   message text not null,
   approved boolean not null default false,
   created_by_admin boolean not null default false,
   created_at timestamptz not null default now()
 );
+
+-- Se a tabela já existia antes da adição do campo linkedin_url:
+alter table comments add column if not exists linkedin_url text;
 
 -- ------------------------------------------------------------
 -- COFFEE_PAYMENTS — histórico de "cafés" pagos (próxima etapa)

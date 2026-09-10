@@ -483,147 +483,17 @@
     }
 
     function initProjectsCarousel() {
-      const carousel = document.querySelector(".projects-carousel");
-      if (!carousel) return;
-
-      const track = carousel.querySelector(".carousel-track");
-      if (!track) return;
-
-      const originals = Array.from(track.querySelectorAll(".carousel-card"));
-      if (!originals.length) return;
-
-      originals.forEach((card, index) => {
-        card.dataset.index = String(index);
-      });
-
-      const clonesBefore = originals.map((card) => {
-        const clone = card.cloneNode(true);
-        clone.dataset.clone = "before";
-        return clone;
-      });
-      const clonesAfter = originals.map((card) => {
-        const clone = card.cloneNode(true);
-        clone.dataset.clone = "after";
-        return clone;
-      });
-
-      track.prepend(...clonesBefore);
-      track.append(...clonesAfter);
-
-      let cards = Array.from(track.querySelectorAll(".carousel-card"));
-      const total = originals.length;
-
-      const pokedexIndex = originals.findIndex((card) =>
-        card.querySelector("h3")?.textContent?.trim().toUpperCase() === "POKEDEX"
-      );
-      let currentIndex = total + (pokedexIndex >= 0 ? pokedexIndex : Math.floor(total / 2));
-      let startX = 0;
-      let startTranslate = 0;
-      let currentTranslate = 0;
-      let isDragging = false;
-      let hasMoved = false;
-
-      function normalizeIndex(index) {
-        return ((index % total) + total) % total;
-      }
-
-      function updateCenter() {
-        const containerCenter = carousel.clientWidth / 2;
-        const activeCard = cards[currentIndex];
-        if (!activeCard) return;
-        const cardCenter = activeCard.offsetLeft + activeCard.offsetWidth / 2;
-        currentTranslate = containerCenter - cardCenter;
-        track.style.transform = `translateX(${currentTranslate}px)`;
-        cards.forEach((card, index) => {
-          const delta = index - currentIndex;
-          card.classList.toggle("is-center", delta === 0);
-          card.classList.toggle("is-left", delta === -1);
-          card.classList.toggle("is-right", delta === 1);
-          card.classList.toggle("is-far", Math.abs(delta) > 1);
+      if (window.initInfiniteCarousel) {
+        window.initInfiniteCarousel(".projects-carousel", {
+          cardSelector: ".carousel-card",
+          trackSelector: ".carousel-track",
+          getInitialIndex: (items) =>
+            items.findIndex(
+              (card) =>
+                card.querySelector("h3")?.textContent?.trim().toUpperCase() === "POKEDEX"
+            ),
         });
       }
-
-      function snapToClosest() {
-        const containerCenter = carousel.clientWidth / 2;
-        let closestIndex = currentIndex;
-        let closestDistance = Number.POSITIVE_INFINITY;
-
-        cards.forEach((card, index) => {
-          const cardCenter = card.offsetLeft + card.offsetWidth / 2 + currentTranslate;
-          const distance = Math.abs(containerCenter - cardCenter);
-          if (distance < closestDistance) {
-            closestDistance = distance;
-            closestIndex = index;
-          }
-        });
-
-        currentIndex = closestIndex;
-        track.style.transition = "transform 280ms ease";
-        updateCenter();
-      }
-
-      function onPointerDown(event) {
-        if (event.target.closest("a")) return;
-        isDragging = true;
-        hasMoved = false;
-        carousel.classList.add("is-dragging");
-        track.style.transition = "none";
-        startX = event.clientX ?? 0;
-        startTranslate = currentTranslate;
-        carousel.setPointerCapture(event.pointerId);
-      }
-
-      function onPointerMove(event) {
-        if (!isDragging) return;
-        const delta = (event.clientX ?? 0) - startX;
-        if (Math.abs(delta) > 6) {
-          hasMoved = true;
-        }
-        currentTranslate = startTranslate + delta;
-        track.style.transform = `translateX(${currentTranslate}px)`;
-      }
-
-      function onPointerUp(event) {
-        if (!isDragging) return;
-        isDragging = false;
-        hasMoved = false;
-        carousel.classList.remove("is-dragging");
-        carousel.releasePointerCapture(event.pointerId);
-        snapToClosest();
-      }
-
-      carousel.addEventListener("pointerdown", onPointerDown);
-      carousel.addEventListener("pointermove", onPointerMove);
-      carousel.addEventListener("pointerup", onPointerUp);
-      carousel.addEventListener("pointerleave", onPointerUp);
-
-      cards.forEach((card) => {
-        card.addEventListener("click", () => {
-          if (hasMoved) return;
-          const rawIndex = Number(card.dataset.index ?? 0);
-          currentIndex = rawIndex + total;
-          track.style.transition = "transform 280ms ease";
-          updateCenter();
-        });
-      });
-
-      track.addEventListener("transitionend", () => {
-        if (currentIndex < total) {
-          currentIndex += total;
-          track.style.transition = "none";
-          updateCenter();
-        } else if (currentIndex >= total * 2) {
-          currentIndex -= total;
-          track.style.transition = "none";
-          updateCenter();
-        }
-      });
-
-      window.addEventListener("resize", () => {
-        updateCenter();
-      });
-
-      updateCenter();
     }
 
     initTheme();

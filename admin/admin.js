@@ -337,10 +337,13 @@
     const row = document.createElement("div");
     row.className = "admin-list-item";
     const originTag = comment.created_by_admin ? " · adicionado por você" : "";
+    const linkedinTag = comment.linkedin_url
+      ? ` · <a href="${encodeURI(comment.linkedin_url)}" target="_blank" rel="noreferrer" style="color:var(--text-main);text-decoration:underline;">LinkedIn</a>`
+      : "";
     row.innerHTML = `
       <div class="admin-list-item-info">
         <strong>${comment.name} ${badge(comment.approved)}</strong>
-        <span>${comment.role || "sem papel definido"}${originTag} — "${comment.message.slice(0, 60)}${comment.message.length > 60 ? "…" : ""}"</span>
+        <span>${comment.role || "sem papel definido"}${originTag}${linkedinTag} — "${comment.message.slice(0, 60)}${comment.message.length > 60 ? "…" : ""}"</span>
       </div>
       <div class="admin-list-item-actions">
         <button class="admin-btn" data-toggle>${comment.approved ? "Revogar" : "Aprovar"}</button>
@@ -372,6 +375,7 @@
     document.getElementById("commentId").value = comment?.id || "";
     document.getElementById("commentName").value = comment?.name || "";
     document.getElementById("commentEmail").value = comment?.email || "";
+    document.getElementById("commentLinkedin").value = comment?.linkedin_url || "";
     document.getElementById("commentRole").value = comment?.role || "";
     document.getElementById("commentPhotoFile").value = "";
     document.getElementById("commentMessage").value = comment?.message || "";
@@ -396,6 +400,7 @@
       const payload = {
         name: document.getElementById("commentName").value.trim(),
         email: document.getElementById("commentEmail").value.trim(),
+        linkedin_url: document.getElementById("commentLinkedin").value.trim() || null,
         role: document.getElementById("commentRole").value.trim(),
         message: document.getElementById("commentMessage").value.trim(),
         approved: document.getElementById("commentApproved").checked,

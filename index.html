@@ -264,30 +264,47 @@
     <section id="depoimentos" class="section">
       <div class="section-inner">
         <div class="transition-badge">Comentários</div>
-        <h2>O que dizem sobre mim</h2>
+        <div class="depoimentos-header">
+          <h2>O que dizem sobre mim</h2>
+          <button id="openCommentModalBtn" class="comment-add-btn" type="button" aria-label="Adicionar comentário" title="Deixe seu comentário">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+        </div>
         <p class="section-text">
           Colegas, professores e clientes deixaram um comentário por aqui. Quer deixar o seu?
         </p>
 
-        <div id="commentsList" class="comments-list">
-          <p class="comments-empty">Carregando comentários...</p>
+        <div class="comments-carousel" aria-label="Carrossel de comentários">
+          <div id="commentsList" class="carousel-track comments-track">
+            <p class="comments-empty">Carregando comentários...</p>
+          </div>
         </div>
 
-        <div class="card comment-form-card">
-          <h3>Deixe seu comentário</h3>
+        <dialog id="commentModal" class="comment-dialog">
+          <div class="comment-dialog-header">
+            <h3>Deixe seu comentário</h3>
+            <button type="button" class="comment-dialog-close" data-close aria-label="Fechar">&times;</button>
+          </div>
           <form id="commentForm" class="comment-form">
             <input type="text" name="hp_field" class="comment-honeypot" tabindex="-1" autocomplete="off">
             <label>Nome <input type="text" id="commentName" required></label>
             <label>Email <input type="email" id="commentEmail" required></label>
+            <label>LinkedIn (opcional) <input type="url" id="commentLinkedin" placeholder="https://linkedin.com/in/seu-perfil"></label>
             <label>Como você me conhece? <input type="text" id="commentRole"
                 placeholder="Colega de trabalho, professor, cliente..."></label>
             <label>Foto (opcional) <input type="file" id="commentPhoto" accept="image/*"></label>
             <label>Mensagem <textarea id="commentMessage" rows="4" maxlength="1000" required></textarea></label>
             <p id="commentFormError" class="comment-form-error"></p>
             <p id="commentFormSuccess" class="comment-form-success"></p>
-            <button type="submit" class="project-link">Enviar comentário</button>
+            <div class="comment-dialog-actions">
+              <button type="button" class="comment-btn-cancel" data-close>Cancelar</button>
+              <button type="submit" class="project-link comment-btn-submit">Enviar comentário</button>
+            </div>
           </form>
-        </div>
+        </dialog>
       </div>
     </section>
 
@@ -338,6 +355,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./assets/js/supabase-config.js"></script>
+  <script src="./assets/js/infinite-carousel.js"></script>
   <script src="./assets/js/data-loader.js"></script>
   <script src="./assets/js/comments.js"></script>
   <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
