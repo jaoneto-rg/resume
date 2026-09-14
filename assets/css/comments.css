@@ -292,6 +292,11 @@
   margin-bottom: 0.5rem;
 }
 
+#footerNameTrigger {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 .comment-dialog-header h3 {
   margin: 0;
   font-family: "Space Grotesk", sans-serif;
@@ -403,4 +408,3 @@
 .comment-btn-submit {
   cursor: pointer;
 }
-
