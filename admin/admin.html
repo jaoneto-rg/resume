@@ -5,11 +5,110 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — João A. M. Neto</title>
   <meta name="robots" content="noindex, nofollow">
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/hero-section.css">
   <link rel="stylesheet" href="./admin.css">
+  <!-- Shaders for Suminagashi -->
+  <script id="fragmentShader" type="x-shader/x-fragment">
+    precision highp float;
+    uniform float uTime;
+    uniform vec2 uMousePosition;
+    uniform float uHue;
+    uniform float uHueVariation;
+    uniform float uDensity;
+    uniform float uDisplacement;
+    uniform float uSaturation;
+    uniform float uLightness;
+    uniform float uLightnessVariation;
+    varying vec2 vUv;
+    float mod289(float x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec4 perm(vec4 x) { return mod289(((x * 34.0) + 1.0) * x); }
+    float hue2rgb(float f1, float f2, float hue) {
+      if (hue < 0.0) hue += 1.0;
+      else if (hue > 1.0) hue -= 1.0;
+      float res;
+      if ((6.0 * hue) < 1.0) res = f1 + (f2 - f1) * 6.0 * hue;
+      else if ((2.0 * hue) < 1.0) res = f2;
+      else if ((3.0 * hue) < 2.0) res = f1 + (f2 - f1) * ((2.0 / 3.0) - hue) * 6.0;
+      else res = f1;
+      return res;
+    }
+    vec2 fade(vec2 t) { return t * t * t * (t * (t * 6.0 - 15.0) + 10.0); }
+    float cnoise(vec2 P) {
+      vec4 Pi = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0);
+      vec4 Pf = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0);
+      Pi = mod(Pi, 289.0);
+      vec4 ix = Pi.xzxz;
+      vec4 iy = Pi.yyww;
+      vec4 fx = Pf.xzxz;
+      vec4 fy = Pf.yyww;
+      vec4 i = perm(perm(ix) + iy);
+      vec4 gx = 2.0 * fract(i * 0.0243902439) - 1.0;
+      vec4 gy = abs(gx) - 0.5;
+      vec4 tx = floor(gx + 0.5);
+      gx = gx - tx;
+      vec2 g00 = vec2(gx.x, gy.x);
+      vec2 g10 = vec2(gx.y, gy.y);
+      vec2 g01 = vec2(gx.z, gy.z);
+      vec2 g11 = vec2(gx.w, gy.w);
+      vec4 norm = 1.79284291400159 - 0.85373472095314 * vec4(dot(g00, g00), dot(g01, g01), dot(g10, g10), dot(g11, g11));
+      g00 *= norm.x;
+      g01 *= norm.y;
+      g10 *= norm.z;
+      g11 *= norm.w;
+      float n00 = dot(g00, vec2(fx.x, fy.x));
+      float n10 = dot(g10, vec2(fx.y, fy.y));
+      float n01 = dot(g01, vec2(fx.z, fy.z));
+      float n11 = dot(g11, vec2(fx.w, fy.w));
+      vec2 fade_xy = fade(Pf.xy);
+      vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
+      float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
+      return 2.3 * n_xy;
+    }
+    void main() {
+      float mouseDistance = length(vUv - uMousePosition);
+      float t = uTime * 0.002;
+      float elevation = vUv.y * uDensity * 10.0;
+      float shadow = smoothstep(0.0, 0.3 + sin(t * 5.0 * 3.14) * 0.1, mouseDistance);
+      elevation += shadow * 5.0;
+      float displacement = cnoise(vec2(t + vUv.y * 2.0, t + vUv.x * 3.0)) * uDisplacement * 3.0;
+      elevation += displacement * 4.0;
+      elevation *= 2.0 + cnoise(vec2(t + vUv.y * 1.0, t + 0.5)) * 2.0;
+      float paperNoise = cnoise(vec2(vUv.x * 2.4 - t * 0.25, vUv.y * 2.1 + t * 0.2));
+      float paper = clamp(uLightness + paperNoise * uLightnessVariation, 0.82, 0.99);
+      float layers = elevation * 0.22 + cnoise(vec2(vUv.x * 7.0 + t * 0.4, vUv.y * 6.0 - t * 0.35)) * 0.62;
+      float band = fract(layers);
+      float aa = 0.028;
+      float contour = 1.0 - smoothstep(0.42 - aa, 0.42 + aa, abs(band - 0.5));
+      float pools = smoothstep(0.52, 0.88, band);
+      float thin = 1.0 - smoothstep(0.04, 0.09, abs(fract(layers * 3.2) - 0.5));
+      float ink = clamp(pools * 1.0 + contour * 0.68 + thin * 0.34, 0.0, 1.0);
+      float mouseInk = 1.0 - smoothstep(0.0, 0.45, mouseDistance);
+      ink = clamp(ink + mouseInk * 0.18 * uDisplacement, 0.0, 1.0);
+      float bw = step(0.6, ink);
+      vec3 col = mix(vec3(1.0), vec3(0.0), bw);
+      gl_FragColor = vec4(col, 1.0);
+    }
+  </script>
+  <script id="vertexShader" type="x-shader/x-vertex">
+    attribute vec3 position;
+    attribute vec2 uv;
+    uniform mat4 projectionMatrix;
+    uniform mat4 modelViewMatrix;
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      vec4 pos = vec4(position, 1.0);
+      gl_Position = pos;
+    }
+  </script>
 </head>
 <body class="admin-body">
+
+  <section id="hero" class="admin-hero-wrapper">
+    <div class="world" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
 
   <section id="loginView" class="admin-card">
     <h1>Login Admin</h1>
@@ -28,7 +127,10 @@
   <section id="dashboardView" class="admin-dashboard" hidden>
     <header class="admin-header">
       <h1>Painel Admin</h1>
-      <button id="logoutBtn" class="admin-btn">Sair</button>
+      <div style="display: flex; gap: 0.5rem;">
+        <a href="../index.html" class="admin-btn" style="text-decoration: none;">Voltar ao Site</a>
+        <button id="logoutBtn" class="admin-btn">Sair</button>
+      </div>
     </header>
 
     <section class="admin-section">
@@ -114,8 +216,17 @@
     </form>
   </dialog>
 
+  </section> <!-- /#hero -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../assets/js/supabase-config.js"></script>
+  <script src="../assets/js/hero-section.js"></script>
   <script src="./admin.js"></script>
+  <script>
+    if (window.initHeroSection) {
+      window.initHeroSection();
+    }
+  </script>
 </body>
 </html>

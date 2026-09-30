@@ -50,10 +50,17 @@ body {
 
 body {
   font-family: "Manrope", sans-serif;
-  background: var(--bg-page);
+  background: transparent;
   color: var(--text-main);
   transition: background-color 240ms ease, color 240ms ease;
   overflow-x: hidden;
+}
+
+.world, .grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .topbar {
@@ -116,7 +123,7 @@ html[data-theme="light"] .topbar {
 }
 
 main {
-  background: var(--bg-page);
+  background: transparent;
 }
 
 .section {

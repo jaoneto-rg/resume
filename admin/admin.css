@@ -1,4 +1,12 @@
 .admin-body {
+  margin: 0;
+  min-height: 100vh;
+  /* background managed by canvas */
+}
+
+.admin-hero-wrapper {
+  position: relative;
+  width: 100%;
   min-height: 100vh;
   display: flex;
   align-items: flex-start;
@@ -6,19 +14,68 @@
   padding: clamp(1.5rem, 4vw, 3rem);
 }
 
+.admin-hero-wrapper > .world,
+.admin-hero-wrapper > .grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
 .admin-card {
-  width: min(100%, 380px);
+  width: min(100%, 420px);
   margin-top: 10vh;
-  padding: 2rem;
-  background: var(--surface-strong);
+  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.85); /* slight transparency for glass effect */
+  backdrop-filter: blur(10px);
   border: 1px solid var(--surface-border);
-  border-radius: 18px;
-  box-shadow: var(--shadow);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  /* Pixel font settings */
+  font-family: "VT323", monospace;
+  position: relative;
+  z-index: 10;
+}
+
+[data-theme="dark"] .admin-card {
+  background: rgba(10, 12, 18, 0.85);
 }
 
 .admin-card h1 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "VT323", monospace;
+  font-size: 3rem;
+  text-align: center;
   margin-top: 0;
+  margin-bottom: 2rem;
+  color: var(--text-main);
+}
+
+/* Fix login form indentation and UX */
+#loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+#loginForm label {
+  font-size: 1.4rem;
+  color: var(--text-main);
+  gap: 0.6rem;
+}
+
+#loginForm input {
+  font-family: "VT323", monospace;
+  font-size: 1.5rem;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+}
+
+#loginForm .admin-btn {
+  font-family: "VT323", monospace;
+  font-size: 1.6rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-top: 1rem;
 }
 
 .admin-dashboard {

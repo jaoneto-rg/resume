@@ -342,11 +342,10 @@
     }
 
     function getHeroMouse(event) {
-      const rect = hero.getBoundingClientRect();
       const x = event.clientX ?? event.touches[0].clientX;
       const y = event.clientY ?? event.touches[0].clientY;
-      const px = (x - rect.left) / rect.width;
-      const py = 1.0 - (y - rect.top) / rect.height;
+      const px = x / window.innerWidth;
+      const py = 1.0 - (y / window.innerHeight);
       return {
         px: Math.max(0, Math.min(1, px)),
         py: Math.max(0, Math.min(1, py))
@@ -354,24 +353,22 @@
     }
 
     function initWorld() {
-      const rect = hero.getBoundingClientRect();
-      world = new World(rect.width, rect.height);
+      world = new World(window.innerWidth, window.innerHeight);
       world.applyParameters(atmospheres[currentTheme()][moodIndex]);
       world.loop();
     }
 
     window.addEventListener("resize", function () {
       if (!world) return;
-      const rect = hero.getBoundingClientRect();
-      world.updateSize(rect.width, rect.height);
+      world.updateSize(window.innerWidth, window.innerHeight);
     });
 
-    hero.addEventListener("mousemove", function (event) {
+    document.addEventListener("mousemove", function (event) {
       if (!world) return;
       world.mouseMove(getHeroMouse(event));
     });
 
-    hero.addEventListener("touchmove", function (event) {
+    document.addEventListener("touchmove", function (event) {
       if (!world || !event.touches[0]) return;
       world.mouseMove(getHeroMouse(event));
     }, { passive: true });

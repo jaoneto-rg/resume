@@ -3,8 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "description": "Landing page pessoal com hero WebGL + backend leve em Vercel Functions + Supabase",
+  "scripts": {
+    "dev": "node dev-server.js"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
     "@vercel/speed-insights": "^2.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^18.0.2",
+    "express": "^5.2.1"
   }
 }
