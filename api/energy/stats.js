@@ -2,7 +2,7 @@ const { supabaseAdmin } = require("../_lib/supabase-admin");
 
 const COMMIT_DECAY_HOURS = 48; // energia "base" por commit chega a 0 depois de 48h sem commit
 const COFFEE_DECAY_HOURS = 48; // o empurrão de cada café também decai em 48h
-const COFFEE_BOOST_PERCENT_PER_REAL = 3; // cada R$1 pago = até +3% de energia (no momento do pagamento)
+const COFFEE_BOOST_PERCENT_PER_REAL = 1; // cada R$1 pago = até +1% de energia (no momento do pagamento)
 
 module.exports = async (req, res) => {
   if (req.method !== "GET") {

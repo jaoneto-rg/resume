@@ -17,6 +17,7 @@
     rel="stylesheet">
   <link rel="stylesheet" href="./assets/css/hero-section.css">
   <link rel="stylesheet" href="./assets/css/comments.css">
+  <link rel="stylesheet" href="./assets/css/cafe.css">
 </head>
 
 <body>
@@ -356,6 +357,78 @@
     </div>
   </footer>
 
+  <!-- Botão Flutuante: Me pague um café -->
+  <button id="openCafeModalBtn" class="cafe-floating-btn" type="button" aria-label="Energia do Dev"
+    title="Energia do Dev">
+    <img class="cafe-floating-img" src="./assets/img/energy/coffee_pixel_gourmet_up.png" alt="Energia do Dev" width="32"
+      height="32">
+  </button>
+
+  <!-- Modal: Me pague um café -->
+  <dialog id="cafeModal" class="cafe-dialog" aria-labelledby="cafeHeadline">
+    <div class="cafe-dialog-header">
+      <div class="transition-badge">Energia do Dev</div>
+      <button type="button" class="cafe-dialog-close" data-close aria-label="Fechar">&times;</button>
+    </div>
+
+    <div class="cafe-dialog-body">
+      <h3 id="cafeHeadline" class="cafe-headline">O Dev está carregando energia...</h3>
+      <p class="section-text cafe-subtext" id="cafeSubtext">
+        A barra abaixo reflete o quão &quot;vivo&quot; este projeto está — ela sobe a cada commit novo no
+        repositório e também quando alguém ajuda com um café. Sem commits nem café, ela vai
+        esvaziando sozinha.
+      </p>
+
+      <div class="energy-bar-wrap" aria-label="Barra de energia do Dev">
+        <div class="energy-bar-track">
+          <div id="energyBarFill" class="energy-bar-fill" style="width: 0%"></div>
+        </div>
+        <div class="energy-bar-meta">
+          <span id="energyPercent">--%</span>
+          <span id="energyLastCommit" class="energy-last-commit"></span>
+        </div>
+      </div>
+
+      <div id="cafeStatusBanner" class="cafe-status-banner" hidden></div>
+
+      <div class="cafe-options">
+        <button class="cafe-coffee-btn" data-amount="500" type="button"
+          aria-label="Café espresso - R$ 5 (+5% de energia)">
+          <span class="cafe-coffee-title">Espresso</span>
+          <img class="cafe-coffee-img" src="./assets/img/energy/coffee_pixel.png" alt="Café espresso" width="48"
+            height="48">
+          <div class="cafe-coffee-price-wrap">
+            <span class="cafe-coffee-price">R$ 5</span>
+            <span class="cafe-coffee-boost">+5%</span>
+          </div>
+        </button>
+        <button class="cafe-coffee-btn" data-amount="1000" type="button"
+          aria-label="Café Gourmet - R$ 10 (+10% de energia)">
+          <span class="cafe-coffee-title">Gourmet</span>
+          <img class="cafe-coffee-img" src="./assets/img/energy/coffee_pixel_gourmet_up.png" alt="Café Gourmet"
+            width="48" height="48">
+          <div class="cafe-coffee-price-wrap">
+            <span class="cafe-coffee-price">R$ 10</span>
+            <span class="cafe-coffee-boost">+10%</span>
+          </div>
+        </button>
+        <button class="cafe-coffee-btn" data-amount="2000" type="button"
+          aria-label="Energetico - R$ 20 (+20% de energia)">
+          <span class="cafe-coffee-title">Enérgico</span>
+          <img class="cafe-coffee-img" src="./assets/img/energy/energy_suminagashi.png" alt="Energetico" width="48"
+            height="48">
+          <div class="cafe-coffee-price-wrap">
+            <span class="cafe-coffee-price">R$ 20</span>
+            <span class="cafe-coffee-boost">+20%</span>
+          </div>
+        </button>
+      </div>
+
+      <p id="cafeError" class="cafe-error" aria-live="polite"></p>
+      <p class="cafe-fineprint">Pagamento processado pelo Mercado Pago (cartão ou PIX).</p>
+    </div>
+  </dialog>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./assets/js/supabase-config.js"></script>
   <script src="./assets/js/infinite-carousel.js"></script>
@@ -364,6 +437,7 @@
   <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
   <script src="./assets/js/hero-section.js"></script>
   <script src="./assets/js/admin-acess.js"></script>
+  <script src="./assets/js/cafe.js"></script>
   <script>
     if (window.initCommentsSection) window.initCommentsSection();
 

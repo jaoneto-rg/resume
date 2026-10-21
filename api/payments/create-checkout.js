@@ -30,12 +30,19 @@ module.exports = async (req, res) => {
 
     if (insertError) throw insertError;
 
+    const titles = {
+      500: "Espresso (+5% Energia) ☕",
+      1000: "Gourmet (+10% Energia) ☕",
+      2000: "Energético (+20% Energia) ⚡",
+    };
+
     const preference = await createPreference({
       amountCents: amount_cents,
+      title: titles[amount_cents] || "Energia do Dev",
       externalReference: paymentRow.id,
-      successUrl: `${origin}/cafe.html?status=success`,
-      failureUrl: `${origin}/cafe.html?status=failure`,
-      pendingUrl: `${origin}/cafe.html?status=pending`,
+      successUrl: `${origin}/?cafe=success`,
+      failureUrl: `${origin}/?cafe=failure`,
+      pendingUrl: `${origin}/?cafe=pending`,
       notificationUrl: `${origin}/api/payments/webhook`,
     });
 

@@ -6,6 +6,7 @@ const MP_API = "https://api.mercadopago.com";
 
 async function createPreference({
   amountCents,
+  title,
   externalReference,
   successUrl,
   failureUrl,
@@ -21,7 +22,7 @@ async function createPreference({
     body: JSON.stringify({
       items: [
         {
-          title: "Café pro Dev ☕",
+          title: title || "Café pro Dev ☕",
           quantity: 1,
           currency_id: "BRL",
           unit_price: amountCents / 100,

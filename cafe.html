@@ -1,67 +1,18 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="light">
-
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Me pague um café ☕ | João A. M. Neto</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="./assets/css/hero-section.css">
-  <link rel="stylesheet" href="./assets/css/cafe.css">
+  <title>Redirecionando...</title>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var status = params.get("cafe") || params.get("status");
+      var target = "/" + (status ? "?cafe=" + encodeURIComponent(status) : "");
+      window.location.replace(target);
+    })();
+  </script>
 </head>
-
-<body class="cafe-body">
-  <header class="cafe-nav">
-    <a class="cafe-back" href="./index.html">← Voltar</a>
-    <span class="cafe-nav-title">Me pague um café</span>
-  </header>
-
-  <main class="cafe-main">
-    <section class="cafe-card">
-      <div class="transition-badge">Energia do Dev</div>
-      <h1 id="cafeHeadline">O Dev está carregando energia...</h1>
-      <p class="section-text" id="cafeSubtext">
-        A barra abaixo reflete o quão "vivo" este projeto está — ela sobe a cada commit novo no
-        repositório e também quando alguém ajuda com um café. Sem commits nem café, ela vai
-        esvaziando sozinha.
-      </p>
-
-      <div class="energy-bar-wrap" aria-label="Barra de energia do Dev">
-        <div class="energy-bar-track">
-          <div id="energyBarFill" class="energy-bar-fill" style="width: 0%"></div>
-        </div>
-        <div class="energy-bar-meta">
-          <span id="energyPercent">--%</span>
-          <span id="energyLastCommit" class="energy-last-commit"></span>
-        </div>
-      </div>
-
-      <div id="cafeStatusBanner" class="cafe-status-banner" hidden></div>
-
-      <div class="cafe-options">
-        <button class="cafe-coffee-btn" data-amount="500" type="button">
-          <span class="cafe-coffee-emoji">☕</span>
-          <span>R$ 5</span>
-        </button>
-        <button class="cafe-coffee-btn" data-amount="1000" type="button">
-          <span class="cafe-coffee-emoji">☕☕</span>
-          <span>R$ 10</span>
-        </button>
-        <button class="cafe-coffee-btn" data-amount="2000" type="button">
-          <span class="cafe-coffee-emoji">☕☕☕</span>
-          <span>R$ 20</span>
-        </button>
-      </div>
-      <p id="cafeError" class="cafe-error"></p>
-      <p class="cafe-fineprint">Pagamento processado pelo Mercado Pago (cartão ou PIX).</p>
-    </section>
-  </main>
-
-  <script src="./assets/js/cafe.js"></script>
+<body>
+  <p>Redirecionando para a página principal... <a href="/">Clique aqui se não for redirecionado</a>.</p>
 </body>
-
 </html>

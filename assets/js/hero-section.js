@@ -50,6 +50,8 @@
         this.timer = 0;
         this.mousePos = { x: 0.5, y: 0.5 };
         this.targetMousePos = { x: 0.5, y: 0.5 };
+        this.scrollY = 0;
+        this.targetScrollY = 0;
         this.parameters = atmospheres.light[0];
         this.createPlane();
       }
@@ -60,6 +62,7 @@
           fragmentShader: fragmentShaderScript.textContent,
           uniforms: {
             uTime: { value: 0 },
+            uScroll: { value: 0 },
             uHue: { value: 0.0 },
             uHueVariation: { value: 0.0 },
             uDensity: { value: 0.58 },
@@ -90,6 +93,9 @@
       render() {
         this.timer += this.parameters.speed;
         this.plane.material.uniforms.uTime.value = this.timer;
+
+        this.scrollY += (this.targetScrollY - this.scrollY) * 0.08;
+        this.plane.material.uniforms.uScroll.value = this.scrollY;
 
         this.mousePos.x += (this.targetMousePos.x - this.mousePos.x) * 0.1;
         this.mousePos.y += (this.targetMousePos.y - this.mousePos.y) * 0.1;
@@ -352,11 +358,25 @@
       };
     }
 
+    function getScrollProgress() {
+      const h = window.innerHeight || 1;
+      const top = window.pageYOffset || document.documentElement.scrollTop || 0;
+      return (top / h) * 0.75;
+    }
+
     function initWorld() {
       world = new World(window.innerWidth, window.innerHeight);
+      const initialScroll = getScrollProgress();
+      world.scrollY = initialScroll;
+      world.targetScrollY = initialScroll;
       world.applyParameters(atmospheres[currentTheme()][moodIndex]);
       world.loop();
     }
+
+    window.addEventListener("scroll", function () {
+      if (!world) return;
+      world.targetScrollY = getScrollProgress();
+    }, { passive: true });
 
     window.addEventListener("resize", function () {
       if (!world) return;

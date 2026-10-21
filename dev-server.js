@@ -45,6 +45,14 @@ app.all("/api/comments/:id", (req, res) => {
   commentsById(req, res);
 });
 
+// energy
+const energyStats = require("./api/energy/stats");
+app.all("/api/energy/stats", (req, res) => energyStats(req, res));
+
+// payments
+const createCheckout = require("./api/payments/create-checkout");
+app.all("/api/payments/create-checkout", (req, res) => createCheckout(req, res));
+
 // ---------- static files ----------
 app.use(express.static(path.join(__dirname)));
 

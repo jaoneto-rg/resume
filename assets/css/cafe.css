@@ -1,58 +1,142 @@
-.cafe-body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+/* ============================================================
+   MÓDULO: ME PAGUE UM CAFÉ (Botão Flutuante + Modal)
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   BLOCO 1: BOTÃO FLUTUANTE DE CAFÉ
+   ------------------------------------------------------------ */
+.cafe-floating-btn {
+  position: fixed;
+  top: 20vh; /* ~20% da viewport — segue o usuário no scroll, bem abaixo do header */
+  /* Segue o usuário no scroll, posicionado na faixa central da viewport */
+  right: clamp(1rem, 2.5vw, 2rem);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid var(--surface-border);
+  background: var(--surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.24);
+  z-index: 10;
+  /* Fica abaixo do header (z-index: 12) para o menu mobile abrir por cima sem colisão */
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease;
 }
 
-.cafe-nav {
-  width: 100%;
-  max-width: 900px;
+.cafe-floating-btn:hover {
+  transform: scale(1.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+}
+
+.cafe-floating-btn:active {
+  transform: scale(0.95);
+}
+
+.cafe-floating-btn:focus-visible {
+  outline: 2px solid var(--button-border);
+  outline-offset: 2px;
+}
+
+.cafe-floating-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+  transition: transform 180ms ease;
+}
+
+.cafe-floating-btn:hover .cafe-floating-img {
+  transform: scale(1.15) rotate(-6deg);
+}
+
+/* ------------------------------------------------------------
+   BLOCO 2: ESTRUTURA DA MODAL (<dialog id="cafeModal">)
+   ------------------------------------------------------------ */
+.cafe-dialog {
+  width: min(92vw, 520px);
+  max-height: 90vh;
+  border: 1px solid var(--surface-border);
+  border-radius: 20px;
+  padding: clamp(1.25rem, 3.5vw, 2rem);
+  background: var(--surface-strong);
+  color: var(--text-main);
+  box-shadow: var(--shadow);
+  margin: auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.cafe-dialog::backdrop {
+  background: rgba(7, 9, 16, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+/* Trava de scroll no body enquanto a modal estiver aberta */
+body.cafe-modal-open {
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------
+   BLOCO 3: CABEÇALHO DA MODAL (Badge + Botão Fechar)
+   ------------------------------------------------------------ */
+.cafe-dialog-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem clamp(1rem, 4vw, 2rem);
+  margin-bottom: 0.85rem;
 }
 
-.cafe-back {
-  font: 600 0.9rem "Space Grotesk", sans-serif;
-  color: var(--text-main);
-  text-decoration: none;
-}
-
-.cafe-back:hover {
-  text-decoration: underline;
-}
-
-.cafe-nav-title {
-  font: 600 0.85rem "Space Grotesk", sans-serif;
+.cafe-dialog-close {
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  line-height: 1;
   color: var(--text-soft);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: color 150ms ease, background 150ms ease;
 }
 
-.cafe-main {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 1rem clamp(1rem, 4vw, 2rem) 4rem;
+.cafe-dialog-close:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.cafe-card {
-  width: min(100%, 560px);
-  background: var(--surface-strong);
-  border: 1px solid var(--surface-border);
-  border-radius: 20px;
-  padding: clamp(1.5rem, 4vw, 2.5rem);
+/* ------------------------------------------------------------
+   BLOCO 4: CONTEÚDO PRINCIPAL (Título e Subtexto)
+   ------------------------------------------------------------ */
+.cafe-dialog-body {
   text-align: center;
 }
 
-.cafe-card h1 {
+.cafe-headline {
   font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  font-weight: 700;
+  color: var(--text-main);
   margin: 0.5rem 0;
+  line-height: 1.3;
 }
 
+.cafe-subtext {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text-soft);
+  margin: 0 0 1.25rem;
+}
+
+/* ------------------------------------------------------------
+   BLOCO 5: BARRA DE ENERGIA DO DEV
+   ------------------------------------------------------------ */
 .energy-bar-wrap {
-  margin: 1.75rem 0;
+  margin: 1.25rem 0;
 }
 
 .energy-bar-track {
@@ -79,70 +163,336 @@
   color: var(--text-soft);
 }
 
+.energy-last-commit {
+  text-align: right;
+}
+
+/* ------------------------------------------------------------
+   BLOCO 6: BANNER DE STATUS (Retorno do Mercado Pago)
+   ------------------------------------------------------------ */
 .cafe-status-banner {
   padding: 0.75rem 1rem;
   border-radius: 12px;
-  margin-bottom: 1.25rem;
+  margin: 1rem 0;
   font-weight: 600;
   font-size: 0.9rem;
+  line-height: 1.4;
+  text-align: center;
 }
 
 .cafe-status-banner.is-success {
   background: rgba(11, 107, 58, 0.12);
   color: var(--accent-green, #0b6b3a);
+  border: 1px solid rgba(11, 107, 58, 0.25);
 }
 
 .cafe-status-banner.is-pending {
   background: rgba(224, 166, 58, 0.15);
-  color: #8a6513;
+  color: #c98a12;
+  border: 1px solid rgba(224, 166, 58, 0.3);
+}
+
+html[data-theme="dark"] .cafe-status-banner.is-pending {
+  color: #f0c058;
 }
 
 .cafe-status-banner.is-failure {
   background: rgba(214, 69, 69, 0.12);
   color: #d64545;
+  border: 1px solid rgba(214, 69, 69, 0.25);
 }
 
+/* ------------------------------------------------------------
+   BLOCO 7: OPÇÕES DE CAFÉ (Botões de Checkout)
+   ------------------------------------------------------------ */
 .cafe-options {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.85rem;
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 1.5rem;
+  margin-top: 1.35rem;
 }
 
 .cafe-coffee-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
-  min-width: 100px;
-  padding: 1rem 1.25rem;
-  border-radius: 16px;
-  border: 1px solid var(--button-border);
-  background: var(--button-bg);
-  color: var(--button-text);
-  font: 700 1rem "Space Grotesk", sans-serif;
+  gap: 0.45rem;
+  min-width: 110px;
+  flex: 1 1 110px;
+  max-width: 148px;
+  padding: 0.75rem 0.65rem 0.85rem;
+  border-radius: 18px;
+  border: 1px solid var(--surface-border);
+  background: var(--surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: var(--text-main);
+  box-shadow: var(--shadow);
   cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.cafe-coffee-title {
+  font: 700 0.84rem/1.2 "Space Grotesk", sans-serif;
+  color: var(--text-main);
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.cafe-coffee-btn:hover:not(:disabled) {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+  border-color: var(--button-border);
+}
+
+.cafe-coffee-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
 }
 
 .cafe-coffee-btn:disabled {
   opacity: 0.6;
-  cursor: default;
+  cursor: not-allowed;
 }
 
-.cafe-coffee-emoji {
-  font-size: 1.3rem;
+.cafe-coffee-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.22));
+  transition: transform 180ms ease;
 }
 
+.cafe-coffee-btn:hover:not(:disabled) .cafe-coffee-img {
+  transform: scale(1.12) translateY(-2px);
+}
+
+.cafe-coffee-price-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.cafe-coffee-price {
+  font: 700 0.95rem "Space Grotesk", sans-serif;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+.cafe-coffee-boost {
+  font: 800 0.72rem/1 "Space Grotesk", sans-serif;
+  padding: 0.2rem 0.42rem;
+  border-radius: 999px;
+  background: rgba(11, 107, 58, 0.15);
+  color: var(--accent-green, #0b6b3a);
+  border: 1px solid rgba(11, 107, 58, 0.35);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+html[data-theme="dark"] .cafe-coffee-boost {
+  background: rgba(59, 255, 87, 0.15);
+  color: var(--accent-green, #3bff57);
+  border-color: rgba(59, 255, 87, 0.35);
+}
+
+/* ------------------------------------------------------------
+   BLOCO 8: MENSAGENS DE ERRO E RODAPÉ / NOTA
+   ------------------------------------------------------------ */
 .cafe-error {
   color: #d64545;
   font-size: 0.85rem;
-  min-height: 1em;
-  margin-top: 1rem;
+  min-height: 1.2em;
+  margin: 0.85rem 0 0;
+  text-align: center;
 }
 
 .cafe-fineprint {
-  margin-top: 1.5rem;
+  margin-top: 1.1rem;
   font-size: 0.75rem;
   color: var(--text-soft);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .cafe-floating-btn,
+  .cafe-coffee-btn,
+  .energy-bar-fill {
+    transition: none !important;
+  }
+
+  .cafe-floating-btn:hover,
+  .cafe-coffee-btn:hover {
+    transform: none !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   BLOCO 10: BOTÃO ENERGIA INLINE NA HERO
+   ------------------------------------------------------------ */
+
+@keyframes hero-energy-float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes hero-energy-pulse {
+
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  30% {
+    transform: scale(1.18) rotate(-8deg);
+  }
+
+  60% {
+    transform: scale(1.1) rotate(5deg);
+  }
+}
+
+.hero-energy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: clamp(1.6rem, 3.5vh, 2.4rem);
+  padding: 0.65rem 1.3rem 0.65rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--surface-border);
+  background: var(--surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--text-main);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  animation: hero-energy-float 3.6s ease-in-out infinite;
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow sutil atrás do botão */
+.hero-energy-btn::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 220, 100, 0.22), transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.hero-energy-btn:hover::before,
+.hero-energy-btn:focus-visible::before {
+  opacity: 1;
+}
+
+.hero-energy-btn:hover {
+  animation-play-state: paused;
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.12);
+  border-color: var(--button-border);
+  background: var(--surface-strong);
+}
+
+.hero-energy-btn:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+}
+
+.hero-energy-btn:focus-visible {
+  outline: 2px solid var(--button-border);
+  outline-offset: 3px;
+}
+
+.hero-energy-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+
+.hero-energy-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  animation: hero-energy-pulse 4s ease-in-out infinite;
+  animation-delay: 1.2s;
+}
+
+.hero-energy-btn:hover .hero-energy-img {
+  animation-play-state: paused;
+  transform: scale(1.2) rotate(-8deg);
+  transition: transform 160ms ease;
+}
+
+.hero-energy-label {
+  font: 700 0.9rem/1 "Space Grotesk", sans-serif;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: var(--text-main);
+}
+
+/* Em dark mode, adiciona um leve brilho dourado */
+html[data-theme="dark"] .hero-energy-btn {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 200, 80, 0.08);
+}
+
+html[data-theme="dark"] .hero-energy-btn:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 200, 80, 0.18);
+}
+
+/* Responsivo: em mobile deixa o botão centralizado */
+@media (max-width: 600px) {
+  .hero-energy-btn {
+    margin-top: 1.4rem;
+    padding: 0.55rem 1.1rem 0.55rem 0.7rem;
+    gap: 0.55rem;
+  }
+
+  .hero-energy-icon-wrap {
+    width: 32px;
+    height: 32px;
+  }
+
+  .hero-energy-img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .hero-energy-label {
+    font-size: 0.82rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-energy-btn {
+    animation: none !important;
+  }
+
+  .hero-energy-img {
+    animation: none !important;
+  }
 }

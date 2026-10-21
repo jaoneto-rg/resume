@@ -1,3 +1,6 @@
+<div class="world" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
 <header class="topbar" aria-label="Navegacao principal">
   <div class="topbar-inner">
     <nav class="topbar-nav">
@@ -28,9 +31,6 @@
   </div>
 </header>
 <section id="hero" class="hero" aria-label="Hero">
-  <div class="world" aria-hidden="true"></div>
-  <div class="grain" aria-hidden="true"></div>
-
   <div class="hero-content"><div class="glass">
       <div class="profile-inline">
         <img class="profile-photo" src="./assets/img/profile-img.png" alt="Foto de perfil de Joao A. M. Neto">
@@ -50,6 +50,7 @@
   </div>
 </section>
 
+
 <script id="fragmentShader" type="x-shader/x-fragment">
   precision highp float;
   uniform float uTime;
@@ -61,6 +62,7 @@
   uniform float uSaturation;
   uniform float uLightness;
   uniform float uLightnessVariation;
+  uniform float uScroll;
 
   varying vec2 vUv;
 
@@ -133,19 +135,21 @@
   void main() {
     float mouseDistance = length(vUv - uMousePosition);
     float t = uTime * 0.002;
-    float elevation = vUv.y * uDensity * 10.0;
+    vec2 sUv = vec2(vUv.x, vUv.y - uScroll);
+
+    float elevation = sUv.y * uDensity * 10.0;
 
     float shadow = smoothstep(0.0, 0.3 + sin(t * 5.0 * 3.14) * 0.1, mouseDistance);
     elevation += shadow * 5.0;
 
-    float displacement = cnoise(vec2(t + vUv.y * 2.0, t + vUv.x * 3.0)) * uDisplacement * 3.0;
+    float displacement = cnoise(vec2(t + sUv.y * 2.0, t + sUv.x * 3.0)) * uDisplacement * 3.0;
     elevation += displacement * 4.0;
-    elevation *= 2.0 + cnoise(vec2(t + vUv.y * 1.0, t + 0.5)) * 2.0;
+    elevation *= 2.0 + cnoise(vec2(t + sUv.y * 1.0, t + 0.5)) * 2.0;
 
-    float paperNoise = cnoise(vec2(vUv.x * 2.4 - t * 0.25, vUv.y * 2.1 + t * 0.2));
+    float paperNoise = cnoise(vec2(sUv.x * 2.4 - t * 0.25, sUv.y * 2.1 + t * 0.2));
     float paper = clamp(uLightness + paperNoise * uLightnessVariation, 0.82, 0.99);
 
-    float layers = elevation * 0.22 + cnoise(vec2(vUv.x * 7.0 + t * 0.4, vUv.y * 6.0 - t * 0.35)) * 0.62;
+    float layers = elevation * 0.22 + cnoise(vec2(sUv.x * 7.0 + t * 0.4, sUv.y * 6.0 - t * 0.35)) * 0.62;
     float band = fract(layers);
     float aa = 0.028;
 
