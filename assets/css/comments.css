@@ -408,3 +408,71 @@
 .comment-btn-submit {
   cursor: pointer;
 }
+
+/* ============================================================
+   SKELETON / PLACEHOLDER CARDS
+   ============================================================ */
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.comment-card--skeleton {
+  pointer-events: none;
+  user-select: none;
+}
+
+.skeleton-circle,
+.skeleton-line {
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-shine) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+}
+
+/* Dark theme skeleton colors (default) */
+:root {
+  --skeleton-base: var(--surface-border);
+  --skeleton-shine: rgba(255, 255, 255, 0.08);
+}
+
+/* Light theme skeleton colors */
+html[data-theme="light"] {
+  --skeleton-base: rgba(0, 0, 0, 0.07);
+  --skeleton-shine: rgba(0, 0, 0, 0.02);
+}
+
+.skeleton-circle {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  margin-bottom: 0.85rem;
+}
+
+.skeleton-line--name {
+  width: 55%;
+  height: 1rem;
+  margin: 0 auto 0.35rem;
+}
+
+.skeleton-line--role {
+  width: 40%;
+  height: 0.7rem;
+  margin: 0 auto 0.85rem;
+}
+
+.skeleton-line--msg {
+  width: 90%;
+  height: 0.75rem;
+  margin: 0.35rem auto;
+}
+
+.skeleton-line--short {
+  width: 60%;
+}

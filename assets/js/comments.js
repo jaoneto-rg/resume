@@ -22,6 +22,28 @@
     return `https://${trimmed}`;
   }
 
+  const MIN_CAROUSEL_CARDS = 5;
+
+  function buildSkeletonCard() {
+    const article = document.createElement("article");
+    article.className = "carousel-card comment-card comment-card--skeleton";
+    article.setAttribute("aria-hidden", "true");
+    article.innerHTML = `
+      <div class="comment-header">
+        <div class="comment-avatar-wrap">
+          <div class="skeleton-circle"></div>
+        </div>
+        <div class="skeleton-line skeleton-line--name"></div>
+        <div class="skeleton-line skeleton-line--role"></div>
+      </div>
+      <div class="comment-body">
+        <div class="skeleton-line skeleton-line--msg"></div>
+        <div class="skeleton-line skeleton-line--msg skeleton-line--short"></div>
+      </div>
+    `;
+    return article;
+  }
+
   function buildCommentCard(comment) {
     const article = document.createElement("article");
     article.className = "carousel-card comment-card";
@@ -92,12 +114,35 @@
         return;
       }
 
-      data.forEach((comment) => list.appendChild(buildCommentCard(comment)));
+      const realCards = [];
+      data.forEach((comment) => {
+        const card = buildCommentCard(comment);
+        realCards.push(card);
+      });
+
+      // Pad with skeleton cards distributed around real cards so the
+      // first real comment ends up centered in the carousel.
+      const realCount = realCards.length;
+      const totalNeeded = Math.max(MIN_CAROUSEL_CARDS, realCount);
+      const skeletonsNeeded = totalNeeded - realCount;
+      const skelBefore = Math.floor(skeletonsNeeded / 2);
+      const skelAfter = skeletonsNeeded - skelBefore;
+
+      for (let i = 0; i < skelBefore; i++) {
+        list.appendChild(buildSkeletonCard());
+      }
+      realCards.forEach((card) => list.appendChild(card));
+      for (let i = 0; i < skelAfter; i++) {
+        list.appendChild(buildSkeletonCard());
+      }
 
       if (window.initInfiniteCarousel) {
         window.initInfiniteCarousel(".comments-carousel", {
           cardSelector: ".comment-card",
           trackSelector: ".carousel-track",
+          noCloneOriginals: true,
+          getInitialIndex: (items) =>
+            items.findIndex((card) => !card.classList.contains("comment-card--skeleton")),
         });
       }
     } catch (err) {

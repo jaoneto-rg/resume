@@ -20,20 +20,24 @@
 
     // Se houver menos de 3 cards originais, duplicamos para que o loop infinito
     // tenha cartas suficientes para centro, esquerda e direita sem quebras.
+    // A opção noCloneOriginals pula essa duplicação (útil quando os slots já
+    // foram preenchidos com placeholders/skeletons pelo chamador).
     let baseItems = originals;
-    if (baseItems.length === 1) {
-      baseItems = [
-        baseItems[0],
-        baseItems[0].cloneNode(true),
-        baseItems[0].cloneNode(true),
-      ];
-    } else if (baseItems.length === 2) {
-      baseItems = [
-        baseItems[0],
-        baseItems[1],
-        baseItems[0].cloneNode(true),
-        baseItems[1].cloneNode(true),
-      ];
+    if (!options.noCloneOriginals) {
+      if (baseItems.length === 1) {
+        baseItems = [
+          baseItems[0],
+          baseItems[0].cloneNode(true),
+          baseItems[0].cloneNode(true),
+        ];
+      } else if (baseItems.length === 2) {
+        baseItems = [
+          baseItems[0],
+          baseItems[1],
+          baseItems[0].cloneNode(true),
+          baseItems[1].cloneNode(true),
+        ];
+      }
     }
 
     track.innerHTML = "";
