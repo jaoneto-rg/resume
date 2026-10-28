@@ -18,16 +18,17 @@
     const originals = Array.from(track.querySelectorAll(cardSelector));
     if (!originals.length) return null;
 
+    carousel.classList.remove("is-single-item");
+    if (originals.length === 1) {
+      carousel.classList.add("is-single-item");
+      originals[0].classList.add("is-center");
+      return null;
+    }
+
     // Se houver menos de 3 cards originais, duplicamos para que o loop infinito
     // tenha cartas suficientes para centro, esquerda e direita sem quebras.
     let baseItems = originals;
-    if (baseItems.length === 1) {
-      baseItems = [
-        baseItems[0],
-        baseItems[0].cloneNode(true),
-        baseItems[0].cloneNode(true),
-      ];
-    } else if (baseItems.length === 2) {
+    if (baseItems.length === 2) {
       baseItems = [
         baseItems[0],
         baseItems[1],

@@ -57,6 +57,14 @@
   padding: 0.5rem 0;
 }
 
+.comments-carousel.is-single-item {
+  cursor: default;
+}
+
+.comments-carousel.is-single-item .comments-track {
+  justify-content: center;
+}
+
 .comments-carousel.is-dragging {
   cursor: grabbing;
 }
