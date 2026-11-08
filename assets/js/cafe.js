@@ -5,7 +5,7 @@
  */
 (function () {
   const CACHE_TTL_MS = 30000; // 30 segundos de cache para a energia
-  const ANIMATION_DURATION_MS = 2000; // 2 segundos para subir a barra e o contador
+  const MAX_ANIMATION_DURATION_MS = 10000; // Limite máximo de 10 segundos
   let cachedEnergy = null;
   let lastFetchTime = 0;
   let isFetchingEnergy = false;
@@ -76,16 +76,26 @@
     if (fillEl) fillEl.style.width = "0%";
     if (percentEl) percentEl.textContent = "0%";
 
+    // Duração dinâmica proporcional à porcentagem:
+    // Ex: 5% = ~5 segundos, aumentando conforme a porcentagem sobe,
+    // com teto de até 10 segundos para não cansar o usuário.
+    const durationMs = Math.min(Math.max(targetEnergy * 1000, 1000), MAX_ANIMATION_DURATION_MS);
+
     const startTime = performance.now();
+
+    function easeOutQuad(x) {
+      return 1 - (1 - x) * (1 - x);
+    }
 
     function tick(now) {
       const elapsed = now - startTime;
-      const progress = Math.min(elapsed / ANIMATION_DURATION_MS, 1);
+      const progress = Math.min(elapsed / durationMs, 1);
+      // Desaceleração suave (ease-out) para que a subida vá desacelerando conforme chega perto do final
+      const easedProgress = easeOutQuad(progress);
 
-      // Subida linear e contínua: 0%, 1%, 2%, 3%... até targetEnergy
-      const currentVal = Math.min(targetEnergy, Math.floor(progress * targetEnergy));
+      const currentVal = Math.min(targetEnergy, Math.floor(easedProgress * targetEnergy));
 
-      if (fillEl) fillEl.style.width = `${(progress * targetEnergy).toFixed(2)}%`;
+      if (fillEl) fillEl.style.width = `${(easedProgress * targetEnergy).toFixed(2)}%`;
       if (percentEl) percentEl.textContent = `${currentVal}%`;
 
       if (progress < 1) {
