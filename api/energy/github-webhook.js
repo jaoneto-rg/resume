@@ -46,7 +46,14 @@ async function handler(req, res) {
   const payload = JSON.parse(rawBody.toString("utf8"));
   const ref = payload.ref; // ex: "refs/heads/master"
 
-  if (ref !== "refs/heads/master" && ref !== "refs/heads/main") {
+  const defaultBranch = payload.repository?.default_branch;
+  if (!defaultBranch || ref !== `refs/heads/${defaultBranch}`) {
+    return res.status(200).json({ ok: true, ignored: true });
+  }
+
+  // Opcional: só conta push feito por você (ignora colaboradores e bots).
+  const owner = process.env.GITHUB_OWNER_LOGIN; // ex: jaoneto-rg
+  if (owner && payload.sender?.login !== owner) {
     return res.status(200).json({ ok: true, ignored: true });
   }
 
