@@ -5,9 +5,11 @@
  */
 (function () {
   const CACHE_TTL_MS = 30000; // 30 segundos de cache para a energia
+  const ANIMATION_DURATION_MS = 2000; // 2 segundos para subir a barra e o contador
   let cachedEnergy = null;
   let lastFetchTime = 0;
   let isFetchingEnergy = false;
+  let animationFrameId = null;
 
   function formatRelativeTime(dateIso) {
     if (!dateIso) return "Sem commits recentes";
@@ -34,35 +36,104 @@
     return "O Dev está quase sem energia!";
   }
 
-  function applyEnergyStats(stats) {
+  function resetEnergyDisplay() {
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    }
     const fillEl = document.getElementById("energyBarFill");
     const percentEl = document.getElementById("energyPercent");
+    if (fillEl) fillEl.style.width = "0%";
+    if (percentEl) percentEl.textContent = "0%";
+  }
+
+  function animateEnergyTo(targetEnergy, onComplete) {
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    }
+
+    const fillEl = document.getElementById("energyBarFill");
+    const percentEl = document.getElementById("energyPercent");
+    if (!fillEl && !percentEl) return;
+
+    if (targetEnergy <= 0) {
+      if (fillEl) fillEl.style.width = "0%";
+      if (percentEl) percentEl.textContent = "0%";
+      if (onComplete) onComplete();
+      return;
+    }
+
+    // Se o usuário prefere redução de movimento, vai direto
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (fillEl) fillEl.style.width = `${targetEnergy}%`;
+      if (percentEl) percentEl.textContent = `${targetEnergy}%`;
+      if (onComplete) onComplete();
+      return;
+    }
+
+    // Garante que começa rigorosamente em 0
+    if (fillEl) fillEl.style.width = "0%";
+    if (percentEl) percentEl.textContent = "0%";
+
+    const startTime = performance.now();
+
+    function tick(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / ANIMATION_DURATION_MS, 1);
+
+      // Subida linear e contínua: 0%, 1%, 2%, 3%... até targetEnergy
+      const currentVal = Math.min(targetEnergy, Math.floor(progress * targetEnergy));
+
+      if (fillEl) fillEl.style.width = `${(progress * targetEnergy).toFixed(2)}%`;
+      if (percentEl) percentEl.textContent = `${currentVal}%`;
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(tick);
+      } else {
+        if (fillEl) fillEl.style.width = `${targetEnergy}%`;
+        if (percentEl) percentEl.textContent = `${targetEnergy}%`;
+        animationFrameId = null;
+        if (onComplete) onComplete();
+      }
+    }
+
+    animationFrameId = requestAnimationFrame(tick);
+  }
+
+  function applyEnergyStats(stats, animate = true) {
     const lastCommitEl = document.getElementById("energyLastCommit");
     const headlineEl = document.getElementById("cafeHeadline");
 
     const energy = Math.max(0, Math.min(100, Math.round(stats.energy || 0)));
 
-    if (fillEl) fillEl.style.width = `${energy}%`;
-    if (percentEl) percentEl.textContent = `${energy}%`;
     if (headlineEl) headlineEl.textContent = getEnergyHeadline(energy);
     if (lastCommitEl) lastCommitEl.textContent = formatRelativeTime(stats.lastCommitAt);
+
+    if (animate) {
+      animateEnergyTo(energy);
+    } else {
+      const fillEl = document.getElementById("energyBarFill");
+      const percentEl = document.getElementById("energyPercent");
+      if (fillEl) fillEl.style.width = `${energy}%`;
+      if (percentEl) percentEl.textContent = `${energy}%`;
+    }
   }
 
   async function loadEnergy(forceReload = false) {
     const errorEl = document.getElementById("cafeError");
     const headlineEl = document.getElementById("cafeHeadline");
-    const percentEl = document.getElementById("energyPercent");
 
     const isCacheValid = cachedEnergy && Date.now() - lastFetchTime < CACHE_TTL_MS;
     if (!forceReload && isCacheValid) {
-      applyEnergyStats(cachedEnergy);
+      applyEnergyStats(cachedEnergy, true);
       return;
     }
 
     if (isFetchingEnergy) return;
     isFetchingEnergy = true;
 
-    if (!cachedEnergy && percentEl && percentEl.textContent.trim() === "--%") {
+    if (!cachedEnergy) {
       if (headlineEl) headlineEl.textContent = "Carregando energia do Dev...";
     }
 
@@ -74,7 +145,7 @@
       const data = await res.json();
       cachedEnergy = data;
       lastFetchTime = Date.now();
-      applyEnergyStats(data);
+      applyEnergyStats(data, true);
     } catch (err) {
       console.warn("[cafe] Erro ao carregar energia:", err.message);
       if (errorEl) {
@@ -148,6 +219,7 @@
 
     function openModal() {
       if (errorEl) errorEl.textContent = "";
+      resetEnergyDisplay();
       document.body.classList.add("cafe-modal-open");
       if (typeof modal.showModal === "function") {
         modal.showModal();
@@ -164,6 +236,7 @@
     }
 
     function closeModal() {
+      resetEnergyDisplay();
       document.body.classList.remove("cafe-modal-open");
       if (typeof modal.close === "function" && modal.open) {
         modal.close();

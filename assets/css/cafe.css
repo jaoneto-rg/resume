@@ -152,7 +152,8 @@ body.cafe-modal-open {
   height: 100%;
   border-radius: 999px;
   background: linear-gradient(90deg, #d64545, #e0a63a, var(--accent-green, #0b6b3a));
-  transition: width 0.6s ease;
+  /* A animação é controlada via JS (requestAnimationFrame) com ease-out */
+  transition: none;
 }
 
 .energy-bar-meta {
