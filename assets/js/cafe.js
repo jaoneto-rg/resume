@@ -29,9 +29,9 @@
 
   function getEnergyHeadline(energy) {
     if (energy >= 85) return "O Dev está a todo vapor! ⚡";
-    if (energy >= 55) return "O Dev está trabalhando em bom ritmo! 💻";
-    if (energy >= 25) return "O Dev precisa de uma pausa para o café... ☕";
-    return "O Dev está quase sem bateria! 🪫";
+    if (energy >= 55) return "O Dev está trabalhando em bom ritmo!";
+    if (energy >= 25) return "O Dev precisa de uma pausa para o café...";
+    return "O Dev está quase sem energia!";
   }
 
   function applyEnergyStats(stats) {
