@@ -1,8 +1,8 @@
 const { supabaseAdmin } = require("../_lib/supabase-admin");
+const { currentCommitEnergy } = require("../_lib/energy");
 
-const COMMIT_DECAY_HOURS = 48; // energia "base" por commit chega a 0 depois de 48h sem commit
-const COFFEE_DECAY_HOURS = 48; // o empurrão de cada café também decai em 48h
-const COFFEE_BOOST_PERCENT_PER_REAL = 1; // cada R$1 pago = até +1% de energia (no momento do pagamento)
+const COFFEE_DECAY_HOURS = 48; // o empurrão de cada café decai em 48h
+const COFFEE_BOOST_PERCENT_PER_REAL = 3; // cada R$1 pago = até +3% de energia (no momento do pagamento)
 
 module.exports = async (req, res) => {
   if (req.method !== "GET") {
@@ -11,17 +11,15 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { data: statusRow } = await supabaseAdmin
+    const { data: statusRow, error: statusError } = await supabaseAdmin
       .from("dev_status")
-      .select("last_commit_at")
+      .select("last_commit_at, energy_base")
       .eq("id", 1)
       .single();
 
-    const lastCommitAt = statusRow?.last_commit_at ? new Date(statusRow.last_commit_at) : null;
-    const hoursSinceCommit = lastCommitAt
-      ? (Date.now() - lastCommitAt.getTime()) / 3600000
-      : COMMIT_DECAY_HOURS;
-    const commitEnergy = Math.max(0, 100 - (hoursSinceCommit / COMMIT_DECAY_HOURS) * 100);
+    if (statusError) throw statusError;
+
+    const commitEnergy = currentCommitEnergy(statusRow);
 
     const since = new Date(Date.now() - COFFEE_DECAY_HOURS * 3600000).toISOString();
     const { data: payments } = await supabaseAdmin

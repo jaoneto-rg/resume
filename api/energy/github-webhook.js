@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const { supabaseAdmin } = require("../_lib/supabase-admin");
+const { energyAfterPush } = require("../_lib/energy");
 
 const GITHUB_WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET;
 
@@ -28,9 +29,8 @@ async function handler(req, res) {
     return res.status(405).end();
   }
 
-  // IMPORTANTE: body parsing desabilitado (ver module.exports.config no
-  // final do arquivo) — precisamos dos bytes exatos que o GitHub enviou
-  // pra validar a assinatura HMAC corretamente.
+  // IMPORTANTE: body parsing desabilitado (ver handler.config no final) —
+  // precisamos dos bytes exatos que o GitHub enviou pra validar a assinatura.
   const rawBody = await readRawBody(req);
   const signature = req.headers["x-hub-signature-256"];
 
@@ -50,18 +50,30 @@ async function handler(req, res) {
     return res.status(200).json({ ok: true, ignored: true });
   }
 
+  const commitCount = Array.isArray(payload.commits) ? payload.commits.length : 0;
+
+  const { data: row, error: readError } = await supabaseAdmin
+    .from("dev_status")
+    .select("last_commit_at, energy_base")
+    .eq("id", 1)
+    .single();
+
+  if (readError) return res.status(500).json({ error: readError.message });
+
+  const newEnergy = energyAfterPush(row, commitCount);
+
   const { error } = await supabaseAdmin
     .from("dev_status")
-    .update({ last_commit_at: new Date().toISOString() })
+    .update({ energy_base: newEnergy, last_commit_at: new Date().toISOString() })
     .eq("id", 1);
 
   if (error) return res.status(500).json({ error: error.message });
 
-  return res.status(200).json({ ok: true });
+  return res.status(200).json({ ok: true, energy: newEnergy });
 }
 
-// Desliga o parsing automático do corpo só pra ESSA rota — necessário pra
-// validação de assinatura HMAC funcionar (ver readRawBody acima).
+// Desliga o parsing automático do corpo só pra ESSA rota (necessário pra
+// validar a assinatura HMAC sobre o corpo bruto).
 handler.config = { api: { bodyParser: false } };
 
 module.exports = handler;
