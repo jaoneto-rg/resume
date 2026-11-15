@@ -57,7 +57,7 @@ Uma forma divertida e transparente de mostrar aos visitantes o ritmo de atividad
 ### 1. Como a Energia é Calculada
 - **Commits via GitHub Webhook:** Cada commit enviado aos repositórios ativa o endpoint `/api/energy/github-webhook`, renovando o status com bônus de energia e registrando o timestamp mais recente.
 - **Decaimento Natural:** Caso não ocorram commits recentes, a energia vai decaindo gradualmente com o passar dos dias através de uma curva matemática de decay em `api/_lib/energy.js`.
-- **Apoio & Cafés (Em breve):** Mecanismo de bônus adicional onde apoiadores podem pagar um café via Mercado Pago (PIX/Cartão). Cada contribuição injetará um boost temporário de energia na barra.
+- **Apoio & Cafés (Mercado Pago):** Mecanismo onde apoiadores podem pagar um café via Mercado Pago (PIX/Cartão). Cada contribuição injeta um boost temporário de energia na barra, conciliado automaticamente via Webhook em tempo real.
 
 ### 2. Animação Fluida da Barra & Contador
 - Ao abrir o modal, a barra e o indicador numérico sobem sincronizados de **`0%` até o valor real** retornado pela API (ex: `0% -> 1% -> 2% ... -> 5%`).
@@ -86,9 +86,9 @@ Uma forma divertida e transparente de mostrar aos visitantes o ritmo de atividad
 
 ## 💳 Sistema de Apoio / Pagamentos
 
-> **Status:** *Em breve*
+> **Status:** *Ativo & Integrado em Produção* 🚀
 
-O sistema conta com integração preparada com o Mercado Pago para viabilizar apoios rápidos (Espresso, Gourmet e Enérgico) via PIX e cartão de crédito, com conciliação automática via webhooks para alimentar a barra de energia em tempo real.
+O sistema conta com integração direta com a API do Mercado Pago para viabilizar apoios rápidos (Espresso, Gourmet e Enérgico) via PIX e cartão de crédito, com conciliação automática via Webhooks criptografados para alimentar a barra de energia em tempo real.
 
 ---
 
