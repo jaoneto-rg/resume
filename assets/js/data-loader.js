@@ -116,13 +116,8 @@
       ${mediaHtml}
       <div class="carousel-tech">${techsHtml}</div>
       <div class="carousel-body">
-<<<<<<< HEAD
-        <h3>${escapeHtml(project.title)}</h3>
-        <p class="section-text" data-project-description data-pt="${escapeHtml(project.description)}" data-en="${escapeHtml(project.description_en || project.description)}">${escapeHtml(project.description)}</p>
-=======
         <h3${i18nKey && td(i18nKey + ".title", "pt") ? ` data-i18n="${i18nKey}.title"` : ""}>${escapeHtml(title)}</h3>
         <p class="section-text"${i18nKey ? ` data-i18n="${i18nKey}.body"` : ""}>${escapeHtml(body)}</p>
->>>>>>> 77823194c23c70e913cfe0f8c8d276808a6ceca5
         <div class="project-links">${linksHtml}</div>
       </div>
     `;
@@ -219,28 +214,6 @@
     }
   }
 
-<<<<<<< HEAD
-  async function renderProjects() {
-    const track = document.querySelector(".projects-carousel .carousel-track");
-    if (!track) return;
-
-    const projects = await fetchPublished("projects", "sort_order");
-    if (!projects || !projects.length) return; // mantém os cards estáticos existentes como fallback
-
-    track.innerHTML = "";
-    projects.forEach((project) => track.appendChild(buildProjectCard(project)));
-    applyProjectLanguage(document.documentElement.lang === "en" ? "en" : "pt");
-  }
-
-  function applyProjectLanguage(lang) {
-    document.querySelectorAll("[data-project-description]").forEach((el) => {
-      el.textContent = el.dataset[lang] || el.dataset.pt || "";
-    });
-  }
-  window.addEventListener("site-language-change", (event) => applyProjectLanguage(event.detail?.lang || "pt"));
-
-=======
->>>>>>> 77823194c23c70e913cfe0f8c8d276808a6ceca5
   async function renderExperiences() {
     const timeline = document.querySelector("#trajetoria .timeline");
     if (!timeline) return;
