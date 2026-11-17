@@ -1,5 +1,20 @@
+@font-face {
+  font-family: 'Pixel Times';
+  src: url('../fonts/Pixel Times.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pixel Times';
+  src: url('../fonts/Pixel Times Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
 :root {
   color-scheme: light;
+  --font-pixel: 'Pixel Times', monospace, serif;
   --bg-page: #eff2f5;
   --text-main: #11131a;
   --text-soft: #566070;
@@ -39,6 +54,7 @@ html[data-theme="dark"] {
 
 * {
   box-sizing: border-box;
+  font-family: var(--font-pixel), "Space Grotesk", "Manrope", sans-serif;
 }
 
 html,
@@ -49,7 +65,7 @@ body {
 }
 
 body {
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font-pixel), "Manrope", sans-serif;
   background: transparent;
   color: var(--text-main);
   transition: background-color 240ms ease, color 240ms ease;

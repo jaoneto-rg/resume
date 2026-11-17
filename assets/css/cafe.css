@@ -114,10 +114,11 @@ body.cafe-modal-open {
    ------------------------------------------------------------ */
 .cafe-dialog-body {
   text-align: center;
+  font-family: var(--font-pixel, 'Pixel Times'), inherit;
 }
 
 .cafe-headline {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: var(--font-pixel, 'Pixel Times'), "Space Grotesk", sans-serif;
   font-size: clamp(1.2rem, 3vw, 1.5rem);
   font-weight: 700;
   color: var(--text-main);
