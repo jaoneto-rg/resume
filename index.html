@@ -264,11 +264,11 @@
 
     <section id="depoimentos" class="section">
       <div class="section-inner">
-        <div class="transition-badge">Comentários</div>
+        <div class="transition-badge" data-i18n="comments.eyebrow">Comentários</div>
         <div class="depoimentos-header">
-          <h2>O que dizem sobre mim</h2>
+          <h2 data-i18n="comments.title">O que dizem sobre mim</h2>
           <button id="openCommentModalBtn" class="comment-add-btn" type="button" aria-label="Adicionar comentário"
-            title="Deixe seu comentário">
+            title="Deixe seu comentário" data-i18n-title="comments.add.title" data-i18n-aria="comments.add.aria">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
               stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -276,36 +276,36 @@
             </svg>
           </button>
         </div>
-        <p class="section-text">
+        <p class="section-text" data-i18n="comments.body">
           Colegas, professores e clientes deixaram um comentário por aqui. Quer deixar o seu?
         </p>
 
         <div class="comments-carousel" aria-label="Carrossel de comentários">
           <div id="commentsList" class="carousel-track comments-track">
-            <p class="comments-empty">Carregando comentários...</p>
+            <p class="comments-empty" data-i18n="comments.loading">Carregando comentários...</p>
           </div>
         </div>
 
         <dialog id="commentModal" class="comment-dialog">
           <div class="comment-dialog-header">
-            <h3>Deixe seu comentário</h3>
-            <button type="button" class="comment-dialog-close" data-close aria-label="Fechar">&times;</button>
+            <h3 data-i18n="comments.modal.title">Deixe seu comentário</h3>
+            <button type="button" class="comment-dialog-close" data-close aria-label="Fechar" data-i18n-aria="comments.modal.close">&times;</button>
           </div>
           <form id="commentForm" class="comment-form">
             <input type="text" name="hp_field" class="comment-honeypot" tabindex="-1" autocomplete="off">
-            <label>Nome <input type="text" id="commentName" required></label>
-            <label>Email <input type="email" id="commentEmail" required></label>
-            <label>LinkedIn (opcional) <input type="url" id="commentLinkedin"
-                placeholder="https://linkedin.com/in/seu-perfil"></label>
-            <label>Como você me conhece? <input type="text" id="commentRole"
-                placeholder="Colega de trabalho, professor, cliente..."></label>
-            <label>Foto (opcional) <input type="file" id="commentPhoto" accept="image/*"></label>
-            <label>Mensagem <textarea id="commentMessage" rows="4" maxlength="1000" required></textarea></label>
+            <label><span data-i18n="comments.form.name">Nome</span> <input type="text" id="commentName" required></label>
+            <label><span data-i18n="comments.form.email">Email</span> <input type="email" id="commentEmail" required></label>
+            <label><span data-i18n="comments.form.linkedin">LinkedIn (opcional)</span> <input type="url" id="commentLinkedin"
+                placeholder="https://linkedin.com/in/seu-perfil" data-i18n-placeholder="comments.form.linkedin.placeholder"></label>
+            <label><span data-i18n="comments.form.role">Como você me conhece?</span> <input type="text" id="commentRole"
+                placeholder="Colega de trabalho, professor, cliente..." data-i18n-placeholder="comments.form.role.placeholder"></label>
+            <label><span data-i18n="comments.form.photo">Foto (opcional)</span> <input type="file" id="commentPhoto" accept="image/*"></label>
+            <label><span data-i18n="comments.form.message">Mensagem</span> <textarea id="commentMessage" rows="4" maxlength="1000" required></textarea></label>
             <p id="commentFormError" class="comment-form-error"></p>
             <p id="commentFormSuccess" class="comment-form-success"></p>
             <div class="comment-dialog-actions">
-              <button type="button" class="comment-btn-cancel" data-close>Cancelar</button>
-              <button type="submit" class="project-link comment-btn-submit">Enviar comentário</button>
+              <button type="button" class="comment-btn-cancel" data-close data-i18n="comments.form.cancel">Cancelar</button>
+              <button type="submit" class="project-link comment-btn-submit" data-i18n="comments.form.submit">Enviar comentário</button>
             </div>
           </form>
         </dialog>
@@ -358,8 +358,8 @@
   </footer>
 
   <!-- Botão Flutuante: Me pague um café -->
-  <button id="openCafeModalBtn" class="cafe-floating-btn" type="button" aria-label="Energia do Dev"
-    title="Energia do Dev">
+  <button id="openCafeModalBtn" class="cafe-floating-btn" type="button" aria-label="Energia: Player Dev"
+    title="Energia: Player Dev">
     <img class="cafe-floating-img" src="./assets/img/energy/coffee_pixel_gourmet_up.png" alt="Energia do Dev" width="32"
       height="32">
   </button>
@@ -367,16 +367,14 @@
   <!-- Modal: Me pague um café -->
   <dialog id="cafeModal" class="cafe-dialog" aria-labelledby="cafeHeadline">
     <div class="cafe-dialog-header">
-      <div class="transition-badge">Energia do Dev</div>
+      <div class="transition-badge">ENERGIA: PLAYER DEV</div>
       <button type="button" class="cafe-dialog-close" data-close aria-label="Fechar">&times;</button>
     </div>
 
     <div class="cafe-dialog-body">
-      <h3 id="cafeHeadline" class="cafe-headline">O Dev está carregando energia...</h3>
+      <h3 id="cafeHeadline" class="cafe-headline">Consultando medidor de pixels...</h3>
       <p class="section-text cafe-subtext" id="cafeSubtext">
-        A barra abaixo reflete o quão &quot;vivo&quot; este projeto está — ela sobe a cada commit novo no
-        repositório e também quando alguém ajuda com um café. Sem commits nem café, ela vai
-        esvaziando sozinha.
+        O termômetro de produtividade de todas as minhas criações! Sobe a cada commit entregue no mapa e a cada café que os viajantes deixam na taverna. Sem cafeína ou código, o indicador esvazia. Ajude a manter o inventário cheio!
       </p>
 
       <div class="energy-bar-wrap" aria-label="Barra de energia do Dev">
@@ -384,7 +382,7 @@
           <div id="energyBarFill" class="energy-bar-fill" style="width: 0%"></div>
         </div>
         <div class="energy-bar-meta">
-          <span id="energyPercent">--%</span>
+          <span id="energyPercent">0%</span>
           <span id="energyLastCommit" class="energy-last-commit"></span>
         </div>
       </div>
@@ -393,9 +391,9 @@
 
       <div class="cafe-options">
         <button class="cafe-coffee-btn" data-amount="500" type="button"
-          aria-label="Café espresso - R$ 5 (+5% de energia)">
-          <span class="cafe-coffee-title">Espresso</span>
-          <img class="cafe-coffee-img" src="./assets/img/energy/coffee_pixel.png" alt="Café espresso" width="48"
+          aria-label="Gole Rápido - R$ 5 (+5% de energia)">
+          <span class="cafe-coffee-title">Gole Rápido</span>
+          <img class="cafe-coffee-img" src="./assets/img/energy/coffee_pixel.png" alt="Gole Rápido" width="48"
             height="48">
           <div class="cafe-coffee-price-wrap">
             <span class="cafe-coffee-price">R$ 5</span>
@@ -403,9 +401,9 @@
           </div>
         </button>
         <button class="cafe-coffee-btn" data-amount="1000" type="button"
-          aria-label="Café Gourmet - R$ 10 (+10% de energia)">
-          <span class="cafe-coffee-title">Gourmet</span>
-          <img class="cafe-coffee-img" src="./assets/img/energy/coffee_pixel_gourmet_up.png" alt="Café Gourmet"
+          aria-label="Café Especial - R$ 10 (+10% de energia)">
+          <span class="cafe-coffee-title">Café Especial</span>
+          <img class="cafe-coffee-img" src="./assets/img/energy/coffee_pixel_gourmet_up.png" alt="Café Especial"
             width="48" height="48">
           <div class="cafe-coffee-price-wrap">
             <span class="cafe-coffee-price">R$ 10</span>
@@ -413,9 +411,9 @@
           </div>
         </button>
         <button class="cafe-coffee-btn" data-amount="2000" type="button"
-          aria-label="Energetico - R$ 20 (+20% de energia)">
-          <span class="cafe-coffee-title">Enérgico</span>
-          <img class="cafe-coffee-img" src="./assets/img/energy/energy_suminagashi.png" alt="Energetico" width="48"
+          aria-label="Power-Up - R$ 20 (+20% de energia)">
+          <span class="cafe-coffee-title">Power-Up</span>
+          <img class="cafe-coffee-img" src="./assets/img/energy/energy_suminagashi.png" alt="Power-Up" width="48"
             height="48">
           <div class="cafe-coffee-price-wrap">
             <span class="cafe-coffee-price">R$ 20</span>

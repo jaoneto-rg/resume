@@ -44,6 +44,36 @@
     return article;
   }
 
+  function t(ptText, enText) {
+    const lang = document.documentElement.dataset.lang || "pt";
+    return lang === "en" && enText ? enText : ptText;
+  }
+
+  const ROLE_TRANSLATIONS = {
+    "colega de trabalho": { pt: "Colega de trabalho", en: "Work Colleague" },
+    "colega": { pt: "Colega", en: "Colleague" },
+    "professor": { pt: "Professor", en: "Professor" },
+    "professora": { pt: "Professora", en: "Professor" },
+    "cliente": { pt: "Cliente", en: "Client" },
+    "amigo": { pt: "Amigo", en: "Friend" },
+    "amiga": { pt: "Amiga", en: "Friend" },
+    "desenvolvedor": { pt: "Desenvolvedor", en: "Developer" },
+    "desenvolvedora": { pt: "Desenvolvedora", en: "Developer" },
+    "tech lead": { pt: "Tech Lead", en: "Tech Lead" },
+    "líder técnico": { pt: "Líder Técnico", en: "Tech Lead" },
+    "recrutador": { pt: "Recrutador", en: "Recruiter" },
+    "recrutadora": { pt: "Recrutadora", en: "Recruiter" }
+  };
+
+  function translateRole(rawRole, lang) {
+    if (!rawRole) return "";
+    const key = rawRole.trim().toLowerCase();
+    if (ROLE_TRANSLATIONS[key]) {
+      return ROLE_TRANSLATIONS[key][lang] || rawRole;
+    }
+    return rawRole;
+  }
+
   function buildCommentCard(comment) {
     const article = document.createElement("article");
     article.className = "carousel-card comment-card";
@@ -57,9 +87,14 @@
     let avatarHtml = "";
     let nameHtml = "";
 
+    const lang = document.documentElement.dataset.lang || "pt";
+    const linkedinTitle = lang === "en"
+      ? `View ${escapeHtml(comment.name)}'s LinkedIn profile`
+      : `Ver perfil de ${escapeHtml(comment.name)} no LinkedIn`;
+
     if (linkedinUrl) {
       avatarHtml = `
-        <a href="${escapeHtml(linkedinUrl)}" target="_blank" rel="noreferrer" class="comment-avatar-link" title="Ver perfil de ${escapeHtml(comment.name)} no LinkedIn">
+        <a href="${escapeHtml(linkedinUrl)}" target="_blank" rel="noreferrer" class="comment-avatar-link" title="${linkedinTitle}" data-linkedin-name="${escapeHtml(comment.name)}">
           ${avatarMedia}
           <span class="comment-avatar-badge" aria-hidden="true">
             <svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24">
@@ -69,7 +104,7 @@
         </a>`;
 
       nameHtml = `
-        <a href="${escapeHtml(linkedinUrl)}" target="_blank" rel="noreferrer" class="comment-name-link" title="Ver perfil de ${escapeHtml(comment.name)} no LinkedIn">
+        <a href="${escapeHtml(linkedinUrl)}" target="_blank" rel="noreferrer" class="comment-name-link" title="${linkedinTitle}" data-linkedin-name="${escapeHtml(comment.name)}">
           <h4 class="comment-name">${escapeHtml(comment.name)}</h4>
         </a>`;
     } else {
@@ -77,11 +112,13 @@
       nameHtml = `<h4 class="comment-name">${escapeHtml(comment.name)}</h4>`;
     }
 
+    const displayRole = translateRole(comment.role, lang);
+
     article.innerHTML = `
       <div class="comment-header">
         ${avatarHtml}
         ${nameHtml}
-        ${comment.role ? `<p class="comment-role">${escapeHtml(comment.role)}</p>` : ""}
+        ${comment.role ? `<p class="comment-role" data-raw-role="${escapeHtml(comment.role)}">${escapeHtml(displayRole)}</p>` : ""}
       </div>
       <div class="comment-body">
         <p class="comment-message" data-comment-message data-pt="${escapeHtml(comment.message)}" data-en="${escapeHtml(comment.message_en || comment.message)}">${escapeHtml(comment.message)}</p>
@@ -95,7 +132,7 @@
     if (!list) return;
 
     if (!window.supabase || !window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
-      list.innerHTML = '<p class="comments-empty">Comentários indisponíveis no momento.</p>';
+      list.innerHTML = `<p class="comments-empty" data-i18n="comments.unavailable">${t("Comentários indisponíveis no momento.", "Comments unavailable at the moment.")}</p>`;
       return;
     }
 
@@ -110,7 +147,7 @@
 
       list.innerHTML = "";
       if (!data || !data.length) {
-        list.innerHTML = '<p class="comments-empty">Seja o primeiro a deixar um comentário!</p>';
+        list.innerHTML = `<p class="comments-empty" data-i18n="comments.empty">${t("Seja o primeiro a deixar um comentário!", "Be the first to leave a comment!")}</p>`;
         return;
       }
 
@@ -258,11 +295,14 @@
 
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
-          throw new Error(body.error || "Não foi possível enviar o comentário.");
+          throw new Error(body.error || t("Não foi possível enviar o comentário.", "Could not submit comment."));
         }
 
         form.reset();
-        successEl.textContent = "Comentário enviado! Ele vai aparecer aqui assim que eu aprovar. Obrigado 🙂";
+        successEl.textContent = t(
+          "Comentário enviado! Ele vai aparecer aqui assim que eu aprovar. Obrigado 🙂",
+          "Comment submitted! It will appear here once approved. Thank you 🙂"
+        );
       } catch (err) {
         errorEl.textContent = err.message;
       } finally {
@@ -270,6 +310,35 @@
       }
     });
   }
+
+  function retranslateComments() {
+    const lang = document.documentElement.dataset.lang || "pt";
+
+    // Atualiza estado vazio/erro se visível
+    const emptyEl = document.querySelector("#commentsList .comments-empty");
+    if (emptyEl) {
+      const key = emptyEl.getAttribute("data-i18n");
+      if (key && window._i18n && window._i18n[lang] && window._i18n[lang][key]) {
+        emptyEl.textContent = window._i18n[lang][key];
+      }
+    }
+
+    // Atualiza roles e títulos dos links de LinkedIn nos cards de comentário
+    document.querySelectorAll(".comment-card:not(.comment-card--skeleton)").forEach((card) => {
+      const roleEl = card.querySelector(".comment-role");
+      if (roleEl && roleEl.dataset.rawRole) {
+        roleEl.textContent = translateRole(roleEl.dataset.rawRole, lang);
+      }
+      card.querySelectorAll("[data-linkedin-name]").forEach((link) => {
+        const name = link.dataset.linkedinName || "";
+        link.title = lang === "en"
+          ? `View ${name}'s LinkedIn profile`
+          : `Ver perfil de ${name} no LinkedIn`;
+      });
+    });
+  }
+
+  window.retranslateComments = retranslateComments;
 
   window.initCommentsSection = function initCommentsSection() {
     loadApprovedComments();

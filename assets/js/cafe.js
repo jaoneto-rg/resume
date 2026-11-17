@@ -5,9 +5,11 @@
  */
 (function () {
   const CACHE_TTL_MS = 30000; // 30 segundos de cache para a energia
+  const MAX_ANIMATION_DURATION_MS = 10000; // Limite máximo de 10 segundos
   let cachedEnergy = null;
   let lastFetchTime = 0;
   let isFetchingEnergy = false;
+  let animationFrameId = null;
 
   function formatRelativeTime(dateIso) {
     if (!dateIso) return "Sem commits recentes";
@@ -28,42 +30,121 @@
   }
 
   function getEnergyHeadline(energy) {
-    if (energy >= 85) return "O Dev está a todo vapor! ⚡";
-    if (energy >= 55) return "O Dev está trabalhando em bom ritmo! 💻";
-    if (energy >= 25) return "O Dev precisa de uma pausa para o café... ☕";
-    return "O Dev está quase sem bateria! 🪫";
+    if (energy >= 85) return "Dev nível 99: Energia máxima atingida! ⚡";
+    if (energy >= 55) return "Codando em ritmo lendário! 🎮";
+    if (energy >= 25) return "Energia caindo... hora do drop de café! ☕";
+    return "Game Over iminente: café urgente! 🪫";
   }
 
-  function applyEnergyStats(stats) {
+  function resetEnergyDisplay() {
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    }
     const fillEl = document.getElementById("energyBarFill");
     const percentEl = document.getElementById("energyPercent");
+    if (fillEl) fillEl.style.width = "0%";
+    if (percentEl) percentEl.textContent = "0%";
+  }
+
+  function animateEnergyTo(targetEnergy, onComplete) {
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    }
+
+    const fillEl = document.getElementById("energyBarFill");
+    const percentEl = document.getElementById("energyPercent");
+    if (!fillEl && !percentEl) return;
+
+    if (targetEnergy <= 0) {
+      if (fillEl) fillEl.style.width = "0%";
+      if (percentEl) percentEl.textContent = "0%";
+      if (onComplete) onComplete();
+      return;
+    }
+
+    // Se o usuário prefere redução de movimento, vai direto
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (fillEl) fillEl.style.width = `${targetEnergy}%`;
+      if (percentEl) percentEl.textContent = `${targetEnergy}%`;
+      if (onComplete) onComplete();
+      return;
+    }
+
+    // Garante que começa rigorosamente em 0
+    if (fillEl) fillEl.style.width = "0%";
+    if (percentEl) percentEl.textContent = "0%";
+
+    // Duração dinâmica proporcional à porcentagem:
+    // Ex: 5% = ~5 segundos, aumentando conforme a porcentagem sobe,
+    // com teto de até 10 segundos para não cansar o usuário.
+    const durationMs = Math.min(Math.max(targetEnergy * 1000, 1000), MAX_ANIMATION_DURATION_MS);
+
+    const startTime = performance.now();
+
+    function easeOutQuad(x) {
+      return 1 - (1 - x) * (1 - x);
+    }
+
+    function tick(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / durationMs, 1);
+      // Desaceleração suave (ease-out) para que a subida vá desacelerando conforme chega perto do final
+      const easedProgress = easeOutQuad(progress);
+
+      const currentVal = Math.min(targetEnergy, Math.floor(easedProgress * targetEnergy));
+
+      if (fillEl) fillEl.style.width = `${(easedProgress * targetEnergy).toFixed(2)}%`;
+      if (percentEl) percentEl.textContent = `${currentVal}%`;
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(tick);
+      } else {
+        if (fillEl) fillEl.style.width = `${targetEnergy}%`;
+        if (percentEl) percentEl.textContent = `${targetEnergy}%`;
+        animationFrameId = null;
+        if (onComplete) onComplete();
+      }
+    }
+
+    animationFrameId = requestAnimationFrame(tick);
+  }
+
+  function applyEnergyStats(stats, animate = true) {
     const lastCommitEl = document.getElementById("energyLastCommit");
     const headlineEl = document.getElementById("cafeHeadline");
 
     const energy = Math.max(0, Math.min(100, Math.round(stats.energy || 0)));
 
-    if (fillEl) fillEl.style.width = `${energy}%`;
-    if (percentEl) percentEl.textContent = `${energy}%`;
     if (headlineEl) headlineEl.textContent = getEnergyHeadline(energy);
     if (lastCommitEl) lastCommitEl.textContent = formatRelativeTime(stats.lastCommitAt);
+
+    if (animate) {
+      animateEnergyTo(energy);
+    } else {
+      const fillEl = document.getElementById("energyBarFill");
+      const percentEl = document.getElementById("energyPercent");
+      if (fillEl) fillEl.style.width = `${energy}%`;
+      if (percentEl) percentEl.textContent = `${energy}%`;
+    }
   }
 
   async function loadEnergy(forceReload = false) {
     const errorEl = document.getElementById("cafeError");
     const headlineEl = document.getElementById("cafeHeadline");
-    const percentEl = document.getElementById("energyPercent");
 
     const isCacheValid = cachedEnergy && Date.now() - lastFetchTime < CACHE_TTL_MS;
     if (!forceReload && isCacheValid) {
-      applyEnergyStats(cachedEnergy);
+      applyEnergyStats(cachedEnergy, true);
       return;
     }
 
     if (isFetchingEnergy) return;
     isFetchingEnergy = true;
 
-    if (!cachedEnergy && percentEl && percentEl.textContent.trim() === "--%") {
-      if (headlineEl) headlineEl.textContent = "Carregando energia do Dev...";
+    if (!cachedEnergy) {
+      if (headlineEl) headlineEl.textContent = "Consultando medidor de pixels...";
     }
 
     try {
@@ -74,7 +155,7 @@
       const data = await res.json();
       cachedEnergy = data;
       lastFetchTime = Date.now();
-      applyEnergyStats(data);
+      applyEnergyStats(data, true);
     } catch (err) {
       console.warn("[cafe] Erro ao carregar energia:", err.message);
       if (errorEl) {
@@ -97,13 +178,13 @@
 
     if (status === "success") {
       banner.classList.add("is-success");
-      banner.textContent = "☕ Muito obrigado pelo café! Sua ajuda mantém o projeto a todo vapor. Atualizando a energia...";
+      banner.textContent = "🎉 +100 DE AMIZADE! Muito obrigado pelo café! O Dev ganhou um boost de velocidade.";
     } else if (status === "pending") {
       banner.classList.add("is-pending");
-      banner.textContent = "⏳ Pagamento pendente. Assim que for compensado pelo Mercado Pago, a barra de energia será atualizada!";
+      banner.textContent = "⏳ Aguardando confirmação do item... Assim que compensar, a barra sobe!";
     } else if (status === "failure") {
       banner.classList.add("is-failure");
-      banner.textContent = "❌ O pagamento não foi concluído. Se quiser tentar novamente, escolha uma das opções abaixo.";
+      banner.textContent = "❌ O drop falhou! Se quiser tentar novamente, escolha uma das opções abaixo.";
     } else {
       banner.hidden = true;
     }
@@ -148,6 +229,7 @@
 
     function openModal() {
       if (errorEl) errorEl.textContent = "";
+      resetEnergyDisplay();
       document.body.classList.add("cafe-modal-open");
       if (typeof modal.showModal === "function") {
         modal.showModal();
@@ -164,6 +246,7 @@
     }
 
     function closeModal() {
+      resetEnergyDisplay();
       document.body.classList.remove("cafe-modal-open");
       if (typeof modal.close === "function" && modal.open) {
         modal.close();
