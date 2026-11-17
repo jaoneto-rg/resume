@@ -30,10 +30,10 @@
   }
 
   function getEnergyHeadline(energy) {
-    if (energy >= 85) return "O Dev está a todo vapor! ⚡";
-    if (energy >= 55) return "O Dev está trabalhando em bom ritmo!";
-    if (energy >= 25) return "O Dev precisa de uma pausa para o café...";
-    return "O Dev está quase sem energia!";
+    if (energy >= 85) return "Dev nível 99: Energia máxima atingida! ⚡";
+    if (energy >= 55) return "Codando em ritmo lendário! 🎮";
+    if (energy >= 25) return "Energia caindo... hora do drop de café! ☕";
+    return "Game Over iminente: café urgente! 🪫";
   }
 
   function resetEnergyDisplay() {
@@ -144,7 +144,7 @@
     isFetchingEnergy = true;
 
     if (!cachedEnergy) {
-      if (headlineEl) headlineEl.textContent = "Carregando energia do Dev...";
+      if (headlineEl) headlineEl.textContent = "Consultando medidor de pixels...";
     }
 
     try {
@@ -178,13 +178,13 @@
 
     if (status === "success") {
       banner.classList.add("is-success");
-      banner.textContent = "☕ Muito obrigado pelo café! Sua ajuda mantém o projeto a todo vapor. Atualizando a energia...";
+      banner.textContent = "🎉 +100 DE AMIZADE! Muito obrigado pelo café! O Dev ganhou um boost de velocidade.";
     } else if (status === "pending") {
       banner.classList.add("is-pending");
-      banner.textContent = "⏳ Pagamento pendente. Assim que for compensado pelo Mercado Pago, a barra de energia será atualizada!";
+      banner.textContent = "⏳ Aguardando confirmação do item... Assim que compensar, a barra sobe!";
     } else if (status === "failure") {
       banner.classList.add("is-failure");
-      banner.textContent = "❌ O pagamento não foi concluído. Se quiser tentar novamente, escolha uma das opções abaixo.";
+      banner.textContent = "❌ O drop falhou! Se quiser tentar novamente, escolha uma das opções abaixo.";
     } else {
       banner.hidden = true;
     }
