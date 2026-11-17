@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
     const user = await requireAdmin(req, res);
     if (!user) return;
 
-    const { title, description, image_url, techs, live_url, github_url, sort_order, published } =
+    const { title, description, description_en, image_url, techs, live_url, github_url, sort_order, published } =
       req.body || {};
 
     if (!title || !description) {
@@ -39,6 +39,7 @@ module.exports = async (req, res) => {
       .insert({
         title,
         description,
+        description_en: description_en || null,
         image_url: image_url || null,
         techs: Array.isArray(techs) ? techs : [],
         live_url: live_url || null,

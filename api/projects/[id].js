@@ -7,12 +7,13 @@ module.exports = async (req, res) => {
   if (!user) return;
 
   if (req.method === "PUT") {
-    const { title, description, image_url, techs, live_url, github_url, sort_order, published } =
+    const { title, description, description_en, image_url, techs, live_url, github_url, sort_order, published } =
       req.body || {};
 
     const updates = { updated_at: new Date().toISOString() };
     if (title !== undefined) updates.title = title;
     if (description !== undefined) updates.description = description;
+    if (description_en !== undefined) updates.description_en = description_en || null;
     if (image_url !== undefined) updates.image_url = image_url;
     if (techs !== undefined) updates.techs = techs;
     if (live_url !== undefined) updates.live_url = live_url;

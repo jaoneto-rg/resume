@@ -22,6 +22,28 @@
     return `https://${trimmed}`;
   }
 
+  const MIN_CAROUSEL_CARDS = 5;
+
+  function buildSkeletonCard() {
+    const article = document.createElement("article");
+    article.className = "carousel-card comment-card comment-card--skeleton";
+    article.setAttribute("aria-hidden", "true");
+    article.innerHTML = `
+      <div class="comment-header">
+        <div class="comment-avatar-wrap">
+          <div class="skeleton-circle"></div>
+        </div>
+        <div class="skeleton-line skeleton-line--name"></div>
+        <div class="skeleton-line skeleton-line--role"></div>
+      </div>
+      <div class="comment-body">
+        <div class="skeleton-line skeleton-line--msg"></div>
+        <div class="skeleton-line skeleton-line--msg skeleton-line--short"></div>
+      </div>
+    `;
+    return article;
+  }
+
   function buildCommentCard(comment) {
     const article = document.createElement("article");
     article.className = "carousel-card comment-card";
@@ -62,7 +84,7 @@
         ${comment.role ? `<p class="comment-role">${escapeHtml(comment.role)}</p>` : ""}
       </div>
       <div class="comment-body">
-        <p class="comment-message">${escapeHtml(comment.message)}</p>
+        <p class="comment-message" data-comment-message data-pt="${escapeHtml(comment.message)}" data-en="${escapeHtml(comment.message_en || comment.message)}">${escapeHtml(comment.message)}</p>
       </div>
     `;
     return article;
@@ -92,12 +114,36 @@
         return;
       }
 
-      data.forEach((comment) => list.appendChild(buildCommentCard(comment)));
+      const realCards = [];
+      data.forEach((comment) => {
+        const card = buildCommentCard(comment);
+        realCards.push(card);
+      });
+      applyCommentLanguage(document.documentElement.lang === "en" ? "en" : "pt");
+
+      // Pad with skeleton cards distributed around real cards so the
+      // first real comment ends up centered in the carousel.
+      const realCount = realCards.length;
+      const totalNeeded = Math.max(MIN_CAROUSEL_CARDS, realCount);
+      const skeletonsNeeded = totalNeeded - realCount;
+      const skelBefore = Math.floor(skeletonsNeeded / 2);
+      const skelAfter = skeletonsNeeded - skelBefore;
+
+      for (let i = 0; i < skelBefore; i++) {
+        list.appendChild(buildSkeletonCard());
+      }
+      realCards.forEach((card) => list.appendChild(card));
+      for (let i = 0; i < skelAfter; i++) {
+        list.appendChild(buildSkeletonCard());
+      }
 
       if (window.initInfiniteCarousel) {
         window.initInfiniteCarousel(".comments-carousel", {
           cardSelector: ".comment-card",
           trackSelector: ".carousel-track",
+          noCloneOriginals: true,
+          getInitialIndex: (items) =>
+            items.findIndex((card) => !card.classList.contains("comment-card--skeleton")),
         });
       }
     } catch (err) {
@@ -105,6 +151,13 @@
       list.innerHTML = '<p class="comments-empty">Comentários indisponíveis no momento.</p>';
     }
   }
+
+  function applyCommentLanguage(lang) {
+    document.querySelectorAll("[data-comment-message]").forEach((el) => {
+      el.textContent = el.dataset[lang] || el.dataset.pt || "";
+    });
+  }
+  window.addEventListener("site-language-change", (event) => applyCommentLanguage(event.detail?.lang || "pt"));
 
   // Redimensiona/comprime a imagem no navegador antes de mandar como base64,
   // pra manter o payload pequeno (o servidor também recusa acima de 2MB).

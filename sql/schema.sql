@@ -14,6 +14,7 @@ create table if not exists projects (
   id uuid primary key default gen_random_uuid(),
   title text not null,
   description text not null,
+  description_en text,
   image_url text,
   techs text[] default '{}',
   live_url text,
@@ -49,6 +50,7 @@ create table if not exists comments (
   role text,                    -- ex: "Colega de trabalho", "Professor"
   linkedin_url text,            -- link para o perfil do autor no LinkedIn (opcional)
   message text not null,
+  message_en text,
   approved boolean not null default false,
   created_by_admin boolean not null default false,
   created_at timestamptz not null default now()
@@ -56,6 +58,8 @@ create table if not exists comments (
 
 -- Se a tabela já existia antes da adição do campo linkedin_url:
 alter table comments add column if not exists linkedin_url text;
+alter table comments add column if not exists message_en text;
+alter table projects add column if not exists description_en text;
 
 -- ------------------------------------------------------------
 -- COFFEE_PAYMENTS — histórico de "cafés" pagos (próxima etapa)

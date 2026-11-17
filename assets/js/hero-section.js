@@ -337,6 +337,7 @@
         langLabel.textContent = next === "en" ? "EN" : "PT";
       }
       applyI18n(next);
+      window.dispatchEvent(new CustomEvent("site-language-change", { detail: { lang: next } }));
       computeAge();
       startTypingAnimation();
     }

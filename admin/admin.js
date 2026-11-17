@@ -125,6 +125,7 @@
     document.getElementById("projectId").value = project?.id || "";
     document.getElementById("projectTitle").value = project?.title || "";
     document.getElementById("projectDescription").value = project?.description || "";
+    document.getElementById("projectDescriptionEn").value = project?.description_en || "";
     document.getElementById("projectImageFile").value = "";
     document.getElementById("projectImageUrl").value = project?.image_url || "";
     document.getElementById("projectTechs").value = (project?.techs || []).join(", ");
@@ -166,6 +167,7 @@
       const payload = {
         title: document.getElementById("projectTitle").value.trim(),
         description: document.getElementById("projectDescription").value.trim(),
+        description_en: document.getElementById("projectDescriptionEn").value.trim() || null,
         image_url: uploadedUrl || document.getElementById("projectImageUrl").value.trim() || null,
         techs: document
           .getElementById("projectTechs")
@@ -379,6 +381,7 @@
     document.getElementById("commentRole").value = comment?.role || "";
     document.getElementById("commentPhotoFile").value = "";
     document.getElementById("commentMessage").value = comment?.message || "";
+    document.getElementById("commentMessageEn").value = comment?.message_en || "";
     document.getElementById("commentApproved").checked = comment ? !!comment.approved : true;
     commentDialog.showModal();
   }
@@ -403,6 +406,7 @@
         linkedin_url: document.getElementById("commentLinkedin").value.trim() || null,
         role: document.getElementById("commentRole").value.trim(),
         message: document.getElementById("commentMessage").value.trim(),
+        message_en: document.getElementById("commentMessageEn").value.trim() || null,
         approved: document.getElementById("commentApproved").checked,
       };
       if (avatarDataUrl) payload.avatar_data_url = avatarDataUrl;
