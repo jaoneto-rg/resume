@@ -68,6 +68,9 @@
     track.append(...clonesAfter);
 
     let cards = Array.from(track.querySelectorAll(cardSelector));
+    const cardLinks = options.centerLinksOnly
+      ? cards.map((card) => card.querySelectorAll("a[href]"))
+      : [];
     const total = baseItems.length;
 
     let initialOffset = Math.floor(total / 2);
@@ -97,6 +100,9 @@
         card.classList.toggle("is-left", delta === -1);
         card.classList.toggle("is-right", delta === 1);
         card.classList.toggle("is-far", Math.abs(delta) > 1);
+        cardLinks[index]?.forEach((link) => {
+          link.inert = delta !== 0;
+        });
       });
     }
 
@@ -161,20 +167,34 @@
       }
     }
 
+    function selectCard(index) {
+      if (index === currentIndex || !cards[index]) return;
+      currentIndex = index;
+      track.style.transition = "transform 280ms ease";
+      updateCenter();
+    }
+
+    function onKeyDown(event) {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+
+      event.preventDefault();
+      carousel.focus({ preventScroll: true });
+      const direction = event.key === "ArrowLeft" ? -1 : 1;
+      selectCard(currentIndex + direction);
+    }
+
     carousel.addEventListener("pointerdown", onPointerDown);
     carousel.addEventListener("pointermove", onPointerMove);
     carousel.addEventListener("pointerup", onPointerUp);
     carousel.addEventListener("pointerleave", onPointerUp);
+    if (options.centerLinksOnly) carousel.addEventListener("keydown", onKeyDown);
 
     cards.forEach((card, index) => {
       card.addEventListener("click", (e) => {
         if (hasMoved) return;
         if (e.target.closest("a, button, input, textarea, select")) return;
-        if (index === currentIndex) return;
-
-        currentIndex = index;
-        track.style.transition = "transform 280ms ease";
-        updateCenter();
+        selectCard(index);
       });
     });
 
@@ -203,6 +223,7 @@
         carousel.removeEventListener("pointermove", onPointerMove);
         carousel.removeEventListener("pointerup", onPointerUp);
         carousel.removeEventListener("pointerleave", onPointerUp);
+        carousel.removeEventListener("keydown", onKeyDown);
         window.removeEventListener("resize", onResize);
       },
     };

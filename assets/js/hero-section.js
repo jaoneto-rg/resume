@@ -244,18 +244,11 @@
       return;
     }
 
-    const atmospheres = {
-      light: [
-        { speed: 0.14, hue: 0.0, hueVariation: 0.0, density: 0.58, displacement: 0.44, saturation: 0.92, lightness: 0.95, lightnessVariation: 0.02 },
-        { speed: 0.16, hue: 0.0, hueVariation: 0.0, density: 0.62, displacement: 0.50, saturation: 0.96, lightness: 0.94, lightnessVariation: 0.03 },
-        { speed: 0.18, hue: 0.0, hueVariation: 0.0, density: 0.66, displacement: 0.52, saturation: 0.99, lightness: 0.93, lightnessVariation: 0.04 }
-      ],
-      dark: [
-        { speed: 0.14, hue: 0.0, hueVariation: 0.0, density: 0.58, displacement: 0.44, saturation: 0.92, lightness: 0.95, lightnessVariation: 0.02 },
-        { speed: 0.16, hue: 0.0, hueVariation: 0.0, density: 0.62, displacement: 0.50, saturation: 0.96, lightness: 0.94, lightnessVariation: 0.03 },
-        { speed: 0.18, hue: 0.0, hueVariation: 0.0, density: 0.66, displacement: 0.52, saturation: 0.99, lightness: 0.93, lightnessVariation: 0.04 }
-      ]
-    };
+    const wavePresets = [
+      { speed: 0.14, density: 0.58, displacement: 0.44 },
+      { speed: 0.10, density: 0.34, displacement: 0.16 },
+      { speed: 0.22, density: 1.08, displacement: 0.94 },
+    ];
 
     class World {
       constructor(width, height) {
@@ -272,7 +265,7 @@
         this.targetMousePos = { x: 0.5, y: 0.5 };
         this.scrollY = 0;
         this.targetScrollY = 0;
-        this.parameters = atmospheres.light[0];
+        this.parameters = wavePresets[0];
         this.createPlane();
       }
 
@@ -301,13 +294,8 @@
       applyParameters(next) {
         this.parameters = next;
         const u = this.plane.material.uniforms;
-        u.uHue.value = next.hue;
-        u.uHueVariation.value = next.hueVariation;
         u.uDensity.value = next.density;
         u.uDisplacement.value = next.displacement;
-        u.uSaturation.value = next.saturation;
-        u.uLightness.value = next.lightness;
-        u.uLightnessVariation.value = next.lightnessVariation;
       }
 
       render() {
@@ -357,7 +345,7 @@
         themeIcon.textContent = next === "dark" ? "☾" : "☀";
       }
       moodIndex = 0;
-      if (world) world.applyParameters(atmospheres[next][moodIndex]);
+      if (world) world.applyParameters(wavePresets[moodIndex]);
     }
 
     const i18n = window._i18n;
@@ -458,7 +446,7 @@
       const initialScroll = getScrollProgress();
       world.scrollY = initialScroll;
       world.targetScrollY = initialScroll;
-      world.applyParameters(atmospheres[currentTheme()][moodIndex]);
+      world.applyParameters(wavePresets[moodIndex]);
       world.loop();
     }
 
@@ -498,9 +486,8 @@
 
     if (waveToggle) {
       waveToggle.addEventListener("click", function () {
-        const list = atmospheres[currentTheme()];
-        moodIndex = (moodIndex + 1) % list.length;
-        if (world) world.applyParameters(list[moodIndex]);
+        moodIndex = (moodIndex + 1) % wavePresets.length;
+        if (world) world.applyParameters(wavePresets[moodIndex]);
       });
     }
 
@@ -593,6 +580,7 @@
         window.initInfiniteCarousel(".projects-carousel", {
           cardSelector: ".carousel-card",
           trackSelector: ".carousel-track",
+          centerLinksOnly: true,
           getInitialIndex: (items) =>
             items.findIndex(
               (card) =>

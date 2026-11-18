@@ -542,8 +542,29 @@ html[data-theme="dark"] main {
 .contact-grid {
   margin-top: 1.6rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.2rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 620px) {
+  .contact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1260px) {
+  .contact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+}
+
+.contact-email-card {
+  container-type: inline-size;
+}
+
+.contact-email {
+  white-space: nowrap;
+  font-size: min(clamp(0.98rem, 2vw, 1.08rem), 6.15cqi);
 }
 
 .link {
