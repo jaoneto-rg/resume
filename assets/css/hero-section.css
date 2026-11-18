@@ -393,6 +393,10 @@ html[data-theme="dark"] main {
   z-index: 1;
 }
 
+.carousel-track.is-repositioning > .carousel-card {
+  transition: none;
+}
+
 .carousel-media {
   display: block;
   border-radius: 0.9rem;

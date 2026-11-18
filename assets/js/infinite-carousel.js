@@ -120,9 +120,11 @@
         }
       });
 
+      const previousTranslate = currentTranslate;
       currentIndex = closestIndex;
       track.style.transition = "transform 280ms ease";
       updateCenter();
+      if (currentTranslate === previousTranslate) repositionToOriginal();
     }
 
     function onPointerDown(event) {
@@ -131,7 +133,6 @@
       isDragging = true;
       hasMoved = false;
       startX = event.clientX ?? 0;
-      startTranslate = currentTranslate;
     }
 
     function onPointerMove(event) {
@@ -140,6 +141,7 @@
       if (Math.abs(delta) > 6) {
         if (!hasMoved) {
           hasMoved = true;
+          startTranslate = new DOMMatrixReadOnly(getComputedStyle(track).transform).m41;
           carousel.classList.add("is-dragging");
           track.style.transition = "none";
           try {
@@ -198,21 +200,30 @@
       });
     });
 
-    track.addEventListener("transitionend", () => {
-      if (currentIndex < total) {
-        currentIndex += total;
-        track.style.transition = "none";
-        updateCenter();
-      } else if (currentIndex >= total * 2) {
-        currentIndex -= total;
-        track.style.transition = "none";
-        updateCenter();
-      }
-    });
+    function repositionToOriginal() {
+      if (currentIndex >= total && currentIndex < total * 2) return;
+
+      currentIndex += currentIndex < total ? total : -total;
+      track.style.transition = "none";
+      track.classList.add("is-repositioning");
+      updateCenter();
+      // Aplica a troca de faixa e de classes no mesmo quadro, sem interpolar os cards.
+      void track.offsetWidth;
+      track.classList.remove("is-repositioning");
+    }
+
+    function onTrackTransitionEnd(event) {
+      if (event.target !== track || event.propertyName !== "transform") return;
+      if (isDragging && hasMoved) return;
+      repositionToOriginal();
+    }
+
+    track.addEventListener("transitionend", onTrackTransitionEnd);
 
     const onResize = () => updateCenter();
     window.addEventListener("resize", onResize);
 
+    track.style.transition = "none";
     updateCenter();
 
     return {
@@ -224,6 +235,7 @@
         carousel.removeEventListener("pointerup", onPointerUp);
         carousel.removeEventListener("pointerleave", onPointerUp);
         carousel.removeEventListener("keydown", onKeyDown);
+        track.removeEventListener("transitionend", onTrackTransitionEnd);
         window.removeEventListener("resize", onResize);
       },
     };
