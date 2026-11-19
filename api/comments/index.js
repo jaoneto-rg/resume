@@ -48,6 +48,10 @@ module.exports = async (req, res) => {
     }
 
     const adminUser = await getAdminUserIfAny(req);
+    const messageEn = adminUser && typeof body.message_en === "string" ? body.message_en.trim() : "";
+    if (messageEn.length > 1000) {
+      return res.status(400).json({ error: "Mensagem em inglês muito longa (máximo 1000 caracteres)." });
+    }
 
     let avatarUrl = null;
     try {
@@ -64,6 +68,7 @@ module.exports = async (req, res) => {
       role: role || null,
       linkedin_url: linkedinUrl || null,
       message,
+      ...(messageEn ? { message_en: messageEn } : {}),
       avatar_url: avatarUrl,
       // Só um admin autenticado pode publicar direto ou marcar como
       // "adicionado por mim". Qualquer submissão pública sempre entra

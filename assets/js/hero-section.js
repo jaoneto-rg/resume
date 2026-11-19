@@ -180,6 +180,8 @@
       "projects.visio.title": "Visio Sunglass — Full-Stack E-commerce",
       "projects.visio.body": "Designed and developed solo, from scratch, a sunglasses e-commerce store with Next.js, React, TypeScript, Supabase, and Tailwind CSS, covering front-end, back-end, database, and deployment. Replaced a static catalog with an interactive mobile-first storefront, boosting buyer engagement by up to 120%.",
       "projects.visio.live": "Access Project",
+      "projects.sculptor.title": "João Mauricio — Sculptor",
+      "projects.sculptor.body": "A minimalist, refined landing page for a sculptor and visual artist, focused on performance and immersion. Built with Next.js 14, TypeScript, Tailwind CSS, Framer Motion, and advanced interactive 3D rendering with Three.js.",
       "projects.daily.title": "Daily Grind — Full-Stack Mobile",
       "projects.daily.body": "Designed and built end-to-end a productivity mobile app with React Native (Expo) and Supabase back-end (database, auth, and storage). Architecture with Zustand, Expo Router, strict TypeScript, Zod, and React Hook Form. CI/CD with GitHub Actions and EAS Build. Bilingual localization (PT-BR/EN).",
       "projects.daily.live": "Access Project",

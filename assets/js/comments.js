@@ -23,6 +23,18 @@
   }
 
   const MIN_CAROUSEL_CARDS = 5;
+  // Depoimentos publicados antes de a base ter uma coluna para tradução.
+  const PUBLISHED_COMMENT_TRANSLATIONS = new Map([
+    [
+      "Sou proprietário da Visio Sunglass e fiz meu site inteiramente com o João. Desde o início do projeto ele deu 100% do suporte e entregou exatamente como tinha pedido. Além de ser um site totalmente clean, ele se mostra presente para qualquer resolução de problemas. Recomendo bastante.",
+      "I own Visio Sunglass and worked with João on my website from start to finish. He gave me his full support from the beginning and delivered exactly what I asked for. The site has a clean design, and João is always available to help resolve any issues. I highly recommend him.",
+    ],
+    [
+      "Trabalhei com João em dois projetos e destaco sua evolução como Desenvolvedor Front-End. No app wiki de Stardew Valley, desenvolvido em React Native, transformou protótipos em um app funcional com organização de código, componentização e atenção à performance e responsividade. Em freelas com HTML, CSS, React e Vue, mostrou versatilidade, foco em clean code e boas práticas com Git. João tem postura madura, responsabilidade nas entregas e forte potencial de crescimento. Recomendo.",
+      "I worked with João on two projects and was impressed by his growth as a front-end developer. On the Stardew Valley wiki app, built with React Native, he turned prototypes into a working app with well-organized code, reusable components, and attention to performance and responsive design. In freelance work with HTML, CSS, React, and Vue, he showed versatility, a focus on clean code, and good Git practices. João takes a mature approach, is dependable in delivering his work, and has strong potential to grow. I recommend him.",
+    ],
+  ]);
+
 
   function buildSkeletonCard() {
     const article = document.createElement("article");
@@ -121,9 +133,13 @@
         ${comment.role ? `<p class="comment-role" data-raw-role="${escapeHtml(comment.role)}">${escapeHtml(displayRole)}</p>` : ""}
       </div>
       <div class="comment-body">
-        <p class="comment-message" data-comment-message data-pt="${escapeHtml(comment.message)}" data-en="${escapeHtml(comment.message_en || comment.message)}">${escapeHtml(comment.message)}</p>
+        <p class="comment-message" data-comment-message></p>
       </div>
     `;
+    const message = article.querySelector("[data-comment-message]");
+    message.dataset.pt = comment.message;
+    message.dataset.en = comment.message_en?.trim() || PUBLISHED_COMMENT_TRANSLATIONS.get(comment.message.trim()) || "";
+    applyCommentLanguage(message, lang);
     return article;
   }
 
@@ -156,8 +172,6 @@
         const card = buildCommentCard(comment);
         realCards.push(card);
       });
-      applyCommentLanguage(document.documentElement.lang === "en" ? "en" : "pt");
-
       // Pad with skeleton cards distributed around real cards so the
       // first real comment ends up centered in the carousel.
       const realCount = realCards.length;
@@ -185,16 +199,13 @@
       }
     } catch (err) {
       console.error("[comments] Falha ao carregar comentários:", err);
-      list.innerHTML = '<p class="comments-empty">Comentários indisponíveis no momento.</p>';
+      list.innerHTML = `<p class="comments-empty" data-i18n="comments.unavailable">${t("Comentários indisponíveis no momento.", "Comments unavailable at the moment.")}</p>`;
     }
   }
 
-  function applyCommentLanguage(lang) {
-    document.querySelectorAll("[data-comment-message]").forEach((el) => {
-      el.textContent = el.dataset[lang] || el.dataset.pt || "";
-    });
+  function applyCommentLanguage(message, lang) {
+    message.textContent = (lang === "en" && message.dataset.en) || message.dataset.pt;
   }
-  window.addEventListener("site-language-change", (event) => applyCommentLanguage(event.detail?.lang || "pt"));
 
   // Redimensiona/comprime a imagem no navegador antes de mandar como base64,
   // pra manter o payload pequeno (o servidor também recusa acima de 2MB).
@@ -325,6 +336,8 @@
 
     // Atualiza roles e títulos dos links de LinkedIn nos cards de comentário
     document.querySelectorAll(".comment-card:not(.comment-card--skeleton)").forEach((card) => {
+      const message = card.querySelector("[data-comment-message]");
+      if (message) applyCommentLanguage(message, lang);
       const roleEl = card.querySelector(".comment-role");
       if (roleEl && roleEl.dataset.rawRole) {
         roleEl.textContent = translateRole(roleEl.dataset.rawRole, lang);

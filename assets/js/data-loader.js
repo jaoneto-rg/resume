@@ -18,6 +18,9 @@
     const title = (project.title || "").toLowerCase();
     const desc = (project.description || "").toLowerCase();
 
+    if (title.normalize("NFD").replace(/\p{Diacritic}/gu, "") === "joao mauricio escultor") {
+      return "projects.sculptor";
+    }
     if (title.includes("pokedex") || desc.includes("pokeapi") || desc.includes("pokemon") || desc.includes("pokédex")) {
       return "projects.pokedex";
     }
@@ -110,7 +113,7 @@
     ].join("");
 
     const title = (i18nKey && td(i18nKey + ".title", lang)) || (lang === "en" && project.title_en) || project.title || "";
-    const body  = (i18nKey && td(i18nKey + ".body", lang))  || (lang === "en" && project.description_en) || project.description || "";
+    const body  = (lang === "en" && project.description_en?.trim()) || (i18nKey && td(i18nKey + ".body", lang)) || project.description || "";
 
     article.innerHTML = `
       ${mediaHtml}
@@ -163,14 +166,14 @@
     document.querySelectorAll("[data-dynamic-card='project']").forEach((card) => {
       const key   = card.dataset.i18nKey;
       const title = (key && td(key + ".title", lang)) || (lang === "en" && card.dataset.enTitle ? card.dataset.enTitle : card.dataset.ptTitle) || "";
-      const body  = (key && td(key + ".body",  lang)) || (lang === "en" && card.dataset.enBody ? card.dataset.enBody : card.dataset.ptBody)   || "";
+      const body  = (lang === "en" && card.dataset.enBody.trim()) || (key && td(key + ".body", lang)) || card.dataset.ptBody || "";
       const liveLabel = (key && td(key + ".live", lang)) || (lang === "en" ? "Access Project" : "Acessar Projeto");
 
       const h3 = card.querySelector("h3");
       const p  = card.querySelector(".section-text");
       const liveLink = card.querySelector(".project-link:not(.project-link--github)");
 
-      if (h3 && (key && td(key + ".title", lang))) h3.textContent = title;
+      if (h3) h3.textContent = title;
       if (p && body) p.textContent = body;
       if (liveLink) liveLink.textContent = liveLabel;
     });
