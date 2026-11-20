@@ -7,6 +7,11 @@
   <script src="https://app.ryzenai.com/api/widget/892609517829158912.js?v=4" async></script>
   <script>
     window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    try {
+      if (localStorage.getItem("displayStyle") === "pixel") {
+        document.documentElement.dataset.displayStyle = "pixel";
+      }
+    } catch {}
   </script>
   <script defer src="/_vercel/speed-insights/script.js"></script>
   <title>João A. M. Neto | Landing Page</title>
@@ -360,7 +365,7 @@
   <!-- Botão Flutuante: Me pague um café -->
   <button id="openCafeModalBtn" class="cafe-floating-btn" type="button" aria-label="Energia: Player Dev"
     title="Energia: Player Dev">
-    <img class="cafe-floating-img" src="./assets/img/energy/coffee_pixel_gourmet_up.png" alt="Energia do Dev" width="32"
+    <img class="cafe-floating-img" src="./assets/img/energy/coffee_pixel_gourmet_up.png" alt="" width="32"
       height="32">
   </button>
 
@@ -393,7 +398,7 @@
         <button class="cafe-coffee-btn" data-amount="500" type="button"
           aria-label="Gole Rápido - R$ 5 (+5% de energia)">
           <span class="cafe-coffee-title">Gole Rápido</span>
-          <img class="cafe-coffee-img" src="./assets/img/energy/coffee_pixel.png" alt="Gole Rápido" width="48"
+          <img class="cafe-coffee-img" src="./assets/img/energy/coffee_pixel.png" alt="" width="48"
             height="48">
           <div class="cafe-coffee-price-wrap">
             <span class="cafe-coffee-price">R$ 5</span>
@@ -403,7 +408,7 @@
         <button class="cafe-coffee-btn" data-amount="1000" type="button"
           aria-label="Café Especial - R$ 10 (+10% de energia)">
           <span class="cafe-coffee-title">Café Especial</span>
-          <img class="cafe-coffee-img" src="./assets/img/energy/coffee_pixel_gourmet_up.png" alt="Café Especial"
+          <img class="cafe-coffee-img" src="./assets/img/energy/coffee_pixel_gourmet_up.png" alt=""
             width="48" height="48">
           <div class="cafe-coffee-price-wrap">
             <span class="cafe-coffee-price">R$ 10</span>
@@ -413,7 +418,7 @@
         <button class="cafe-coffee-btn" data-amount="2000" type="button"
           aria-label="Power-Up - R$ 20 (+20% de energia)">
           <span class="cafe-coffee-title">Power-Up</span>
-          <img class="cafe-coffee-img" src="./assets/img/energy/energy_suminagashi.png" alt="Power-Up" width="48"
+          <img class="cafe-coffee-img" src="./assets/img/energy/energy_suminagashi.png" alt="" width="48"
             height="48">
           <div class="cafe-coffee-price-wrap">
             <span class="cafe-coffee-price">R$ 20</span>

@@ -41,6 +41,14 @@
   outline-offset: 2px;
 }
 
+@media (max-width: 600px) {
+  .cafe-floating-btn {
+    top: auto;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
 .cafe-floating-img {
   width: 32px;
   height: 32px;
@@ -61,6 +69,7 @@
 .cafe-dialog {
   width: min(92vw, 520px);
   max-height: 90vh;
+  max-height: 90dvh;
   border: 1px solid var(--surface-border);
   border-radius: 20px;
   padding: clamp(1.25rem, 3.5vw, 2rem);
@@ -114,11 +123,10 @@ body.cafe-modal-open {
    ------------------------------------------------------------ */
 .cafe-dialog-body {
   text-align: center;
-  font-family: var(--font-pixel, 'Pixel Times'), inherit;
 }
 
 .cafe-headline {
-  font-family: var(--font-pixel, 'Pixel Times'), "Space Grotesk", sans-serif;
+  font-family: var(--font-ui);
   font-size: clamp(1.2rem, 3vw, 1.5rem);
   font-weight: 700;
   color: var(--text-main);
@@ -161,7 +169,7 @@ body.cafe-modal-open {
   display: flex;
   justify-content: space-between;
   margin-top: 0.5rem;
-  font: 600 0.85rem "Space Grotesk", sans-serif;
+  font: 600 0.85rem var(--font-ui);
   color: var(--text-soft);
 }
 
@@ -236,7 +244,7 @@ html[data-theme="dark"] .cafe-status-banner.is-pending {
 }
 
 .cafe-coffee-title {
-  font: 700 0.84rem/1.2 "Space Grotesk", sans-serif;
+  font: 700 0.84rem/1.2 var(--font-ui);
   color: var(--text-main);
   text-align: center;
   white-space: nowrap;
@@ -281,13 +289,13 @@ html[data-theme="dark"] .cafe-status-banner.is-pending {
 }
 
 .cafe-coffee-price {
-  font: 700 0.95rem "Space Grotesk", sans-serif;
+  font: 700 0.95rem var(--font-ui);
   color: var(--text-main);
   letter-spacing: -0.01em;
 }
 
 .cafe-coffee-boost {
-  font: 800 0.72rem/1 "Space Grotesk", sans-serif;
+  font: 800 0.72rem/1 var(--font-ui);
   padding: 0.2rem 0.42rem;
   border-radius: 999px;
   background: rgba(11, 107, 58, 0.15);
@@ -451,7 +459,7 @@ html[data-theme="dark"] .cafe-coffee-boost {
 }
 
 .hero-energy-label {
-  font: 700 0.9rem/1 "Space Grotesk", sans-serif;
+  font: 700 0.9rem/1 var(--font-ui);
   letter-spacing: 0.04em;
   white-space: nowrap;
   color: var(--text-main);

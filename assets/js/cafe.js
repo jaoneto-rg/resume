@@ -10,30 +10,147 @@
   let lastFetchTime = 0;
   let isFetchingEnergy = false;
   let animationFrameId = null;
+  let energyUnavailable = false;
+  let checkoutButton = null;
+  let checkoutFailed = false;
+  let paymentStatus = null;
 
-  function formatRelativeTime(dateIso) {
-    if (!dateIso) return "Sem commits recentes";
+  const copy = {
+    pt: {
+      close: "Fechar",
+      energyBar: "Barra de energia do Dev",
+      paymentNote: "Pagamento processado pelo Mercado Pago (cartão ou Pix).",
+      lastCommit: "Último commit",
+      noCommits: "Sem commits recentes",
+      justNow: "agora há pouco",
+      loadingCheckout: "Aguarde…",
+      checkoutError: "Não foi possível iniciar o pagamento. Tente novamente.",
+      playful: {
+        title: "Energia: Player Dev",
+        loading: "Consultando medidor de pixels...",
+        description: "O termômetro de produtividade de todas as minhas criações! Sobe a cada commit entregue no mapa e a cada café que os viajantes deixam na taverna. Sem cafeína ou código, o indicador esvazia. Ajude a manter o inventário cheio!",
+        headlines: ["Dev nível 99: Energia máxima atingida! ⚡", "Codando em ritmo lendário! 🎮", "Energia caindo... hora do drop de café! ☕", "Game Over iminente: café urgente! 🪫"],
+        options: ["Gole Rápido", "Café Especial", "Power-Up"],
+        energyError: "Não foi possível carregar o nível de energia agora. Você ainda pode apoiar com um café! 🙂",
+        success: "🎉 +100 DE AMIZADE! Muito obrigado pelo café! O Dev ganhou um boost de velocidade.",
+        pending: "⏳ Aguardando confirmação do item... Assim que compensar, a barra sobe!",
+        failure: "❌ O drop falhou! Se quiser tentar novamente, escolha uma das opções abaixo.",
+      },
+      professional: {
+        title: "Apoie o desenvolvimento",
+        loading: "Consultando a atividade recente…",
+        description: "Acompanhe a atividade dos meus projetos. O indicador considera os commits recentes e o apoio recebido. Se quiser contribuir para a continuidade do meu trabalho, escolha um dos valores abaixo.",
+        headlines: ["Nível de atividade alto", "Projetos em desenvolvimento ativo", "Nível de atividade moderado", "Nível de atividade baixo"],
+        option: "Contribuir",
+        energyError: "Não foi possível consultar a atividade recente. As opções de apoio continuam disponíveis.",
+        success: "Pagamento confirmado. Obrigado por apoiar meu trabalho!",
+        pending: "Aguardando a confirmação do pagamento.",
+        failure: "O pagamento não foi concluído. Você pode escolher uma opção abaixo para tentar novamente.",
+      },
+    },
+    en: {
+      close: "Close",
+      energyBar: "Developer energy bar",
+      paymentNote: "Payments processed by Mercado Pago (card or Pix).",
+      lastCommit: "Last commit",
+      noCommits: "No recent commits",
+      justNow: "just now",
+      loadingCheckout: "Please wait…",
+      checkoutError: "Could not start checkout. Please try again.",
+      playful: {
+        title: "Energy: Player Dev",
+        loading: "Checking the pixel meter...",
+        description: "The productivity meter for everything I build! It goes up with each commit on the map and each coffee travelers leave at the tavern. Without caffeine or code, it runs down. Help keep the inventory stocked!",
+        headlines: ["Level 99 dev: Maximum energy reached! ⚡", "Coding at a legendary pace! 🎮", "Energy is dropping... time for a coffee drop! ☕", "Game over is close: coffee needed! 🪫"],
+        options: ["Quick Sip", "Specialty Coffee", "Power-Up"],
+        energyError: "Couldn't load the energy level right now. You can still support me with a coffee! 🙂",
+        success: "🎉 +100 FRIENDSHIP! Thanks for the coffee! The dev got a speed boost.",
+        pending: "⏳ Waiting for your item to clear. Once it does, the energy bar goes up!",
+        failure: "❌ The drop failed! Choose an option below if you'd like to try again.",
+      },
+      professional: {
+        title: "Support my development work",
+        loading: "Checking recent activity…",
+        description: "Follow activity across my projects. The indicator reflects recent commits and contributions. If you'd like to support my ongoing work, choose an amount below.",
+        headlines: ["High activity level", "Projects in active development", "Moderate activity level", "Low activity level"],
+        option: "Contribute",
+        energyError: "Recent activity is unavailable. You can still make a contribution.",
+        success: "Payment confirmed. Thank you for supporting my work!",
+        pending: "Waiting for payment confirmation.",
+        failure: "The payment was not completed. Choose an option below to try again.",
+      },
+    },
+  };
+
+  function formatRelativeTime(dateIso, labels, locale) {
+    if (!dateIso) return labels.noCommits;
     const date = new Date(dateIso);
-    if (isNaN(date.getTime())) return "Sem commits recentes";
+    if (isNaN(date.getTime())) return labels.noCommits;
 
     const diffMs = Date.now() - date.getTime();
     const diffMinutes = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMinutes / 60);
     const diffDays = Math.floor(diffHours / 24);
 
-    if (diffMinutes < 5) return "Último commit agora há pouco";
-    if (diffMinutes < 60) return `Último commit há ${diffMinutes} min`;
-    if (diffHours < 24) return `Último commit há ${diffHours}h`;
-    if (diffDays === 1) return "Último commit ontem";
-    if (diffDays < 30) return `Último commit há ${diffDays} dias`;
-    return `Último commit em ${date.toLocaleDateString("pt-BR")}`;
+    const relative = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" });
+    let time = labels.justNow;
+    if (diffDays >= 30) time = date.toLocaleDateString(locale);
+    else if (diffDays >= 1) time = relative.format(-diffDays, "day");
+    else if (diffHours >= 1) time = relative.format(-diffHours, "hour");
+    else if (diffMinutes >= 5) time = relative.format(-diffMinutes, "minute");
+    return `${labels.lastCommit}: ${time}`;
   }
 
-  function getEnergyHeadline(energy) {
-    if (energy >= 85) return "Dev nível 99: Energia máxima atingida! ⚡";
-    if (energy >= 55) return "Codando em ritmo lendário! 🎮";
-    if (energy >= 25) return "Energia caindo... hora do drop de café! ☕";
-    return "Game Over iminente: café urgente! 🪫";
+  function getEnergyHeadline(energy, headlines) {
+    if (energy >= 85) return headlines[0];
+    if (energy >= 55) return headlines[1];
+    if (energy >= 25) return headlines[2];
+    return headlines[3];
+  }
+
+  function energyPercent(stats) {
+    return Math.max(0, Math.min(100, Math.round(stats.energy || 0)));
+  }
+
+  function renderCafeCopy() {
+    const modal = document.getElementById("cafeModal");
+    if (!modal) return;
+
+    const { dataset } = document.documentElement;
+    const lang = dataset.lang === "en" ? "en" : "pt";
+    const labels = copy[lang];
+    const mode = dataset.displayStyle === "pixel" ? labels.professional : labels.playful;
+    const trigger = document.getElementById("openCafeModalBtn");
+    if (trigger) {
+      trigger.title = mode.title;
+      trigger.setAttribute("aria-label", mode.title);
+    }
+
+    modal.querySelector(".transition-badge").textContent = mode.title;
+    modal.querySelector("[data-close]").setAttribute("aria-label", labels.close);
+    modal.querySelector(".energy-bar-wrap").setAttribute("aria-label", labels.energyBar);
+    modal.querySelector("#cafeHeadline").textContent = cachedEnergy
+      ? getEnergyHeadline(energyPercent(cachedEnergy), mode.headlines)
+      : energyUnavailable ? mode.title : mode.loading;
+    modal.querySelector("#cafeSubtext").textContent = mode.description;
+    modal.querySelector("#energyLastCommit").textContent = cachedEnergy
+      ? formatRelativeTime(cachedEnergy.lastCommitAt, labels, lang === "en" ? "en" : "pt-BR")
+      : "";
+    modal.querySelector(".cafe-fineprint").textContent = labels.paymentNote;
+    modal.querySelector("#cafeError").textContent = checkoutFailed ? labels.checkoutError : energyUnavailable ? mode.energyError : "";
+
+    const banner = modal.querySelector("#cafeStatusBanner");
+    banner.hidden = !paymentStatus;
+    banner.textContent = paymentStatus ? mode[paymentStatus] : "";
+
+    modal.querySelectorAll(".cafe-coffee-btn").forEach((button, index) => {
+      const title = mode.options?.[index] || mode.option;
+      const price = button.querySelector(".cafe-coffee-price").textContent;
+      const boost = button.querySelector(".cafe-coffee-boost").textContent;
+      const text = button === checkoutButton ? labels.loadingCheckout : title;
+      button.querySelector(".cafe-coffee-title").textContent = text;
+      button.setAttribute("aria-label", button === checkoutButton ? text : `${title} · ${price} (${boost})`);
+    });
   }
 
   function resetEnergyDisplay() {
@@ -111,41 +228,17 @@
     animationFrameId = requestAnimationFrame(tick);
   }
 
-  function applyEnergyStats(stats, animate = true) {
-    const lastCommitEl = document.getElementById("energyLastCommit");
-    const headlineEl = document.getElementById("cafeHeadline");
-
-    const energy = Math.max(0, Math.min(100, Math.round(stats.energy || 0)));
-
-    if (headlineEl) headlineEl.textContent = getEnergyHeadline(energy);
-    if (lastCommitEl) lastCommitEl.textContent = formatRelativeTime(stats.lastCommitAt);
-
-    if (animate) {
-      animateEnergyTo(energy);
-    } else {
-      const fillEl = document.getElementById("energyBarFill");
-      const percentEl = document.getElementById("energyPercent");
-      if (fillEl) fillEl.style.width = `${energy}%`;
-      if (percentEl) percentEl.textContent = `${energy}%`;
-    }
-  }
-
   async function loadEnergy(forceReload = false) {
-    const errorEl = document.getElementById("cafeError");
-    const headlineEl = document.getElementById("cafeHeadline");
-
     const isCacheValid = cachedEnergy && Date.now() - lastFetchTime < CACHE_TTL_MS;
     if (!forceReload && isCacheValid) {
-      applyEnergyStats(cachedEnergy, true);
+      animateEnergyTo(energyPercent(cachedEnergy));
       return;
     }
 
     if (isFetchingEnergy) return;
     isFetchingEnergy = true;
-
-    if (!cachedEnergy) {
-      if (headlineEl) headlineEl.textContent = "Consultando medidor de pixels...";
-    }
+    energyUnavailable = false;
+    renderCafeCopy();
 
     try {
       const res = await fetch("/api/energy/stats");
@@ -155,17 +248,13 @@
       const data = await res.json();
       cachedEnergy = data;
       lastFetchTime = Date.now();
-      applyEnergyStats(data, true);
+      animateEnergyTo(energyPercent(data));
     } catch (err) {
       console.warn("[cafe] Erro ao carregar energia:", err.message);
-      if (errorEl) {
-        errorEl.textContent = "Não foi possível carregar o nível de energia agora. Você ainda pode apoiar com um café! 🙂";
-      }
-      if (headlineEl && !cachedEnergy) {
-        headlineEl.textContent = "Energia do Dev";
-      }
+      energyUnavailable = true;
     } finally {
       isFetchingEnergy = false;
+      renderCafeCopy();
     }
   }
 
@@ -173,21 +262,9 @@
     const banner = document.getElementById("cafeStatusBanner");
     if (!banner) return;
 
-    banner.className = "cafe-status-banner";
-    banner.hidden = false;
-
-    if (status === "success") {
-      banner.classList.add("is-success");
-      banner.textContent = "🎉 +100 DE AMIZADE! Muito obrigado pelo café! O Dev ganhou um boost de velocidade.";
-    } else if (status === "pending") {
-      banner.classList.add("is-pending");
-      banner.textContent = "⏳ Aguardando confirmação do item... Assim que compensar, a barra sobe!";
-    } else if (status === "failure") {
-      banner.classList.add("is-failure");
-      banner.textContent = "❌ O drop falhou! Se quiser tentar novamente, escolha uma das opções abaixo.";
-    } else {
-      banner.hidden = true;
-    }
+    paymentStatus = status;
+    banner.classList.add(`is-${status}`);
+    renderCafeCopy();
   }
 
   function cleanReturnUrl() {
@@ -224,11 +301,14 @@
     const modal = document.getElementById("cafeModal");
     if (!modal) return;
 
-    const errorEl = document.getElementById("cafeError");
     const coffeeButtons = modal.querySelectorAll(".cafe-coffee-btn");
+    window.addEventListener("site-language-change", renderCafeCopy);
+    window.addEventListener("site-style-change", renderCafeCopy);
+    renderCafeCopy();
 
     function openModal() {
-      if (errorEl) errorEl.textContent = "";
+      checkoutFailed = false;
+      renderCafeCopy();
       resetEnergyDisplay();
       document.body.classList.add("cafe-modal-open");
       if (typeof modal.showModal === "function") {
@@ -291,10 +371,10 @@
         const amountCents = parseInt(btn.getAttribute("data-amount"), 10);
         if (!amountCents) return;
 
-        if (errorEl) errorEl.textContent = "";
+        checkoutFailed = false;
+        checkoutButton = btn;
         coffeeButtons.forEach((b) => (b.disabled = true));
-        const originalContent = btn.innerHTML;
-        btn.innerHTML = `<span>Aguarde...</span>`;
+        renderCafeCopy();
 
         try {
           const res = await fetch("/api/payments/create-checkout", {
@@ -310,9 +390,11 @@
 
           window.location.href = data.checkout_url;
         } catch (err) {
-          if (errorEl) errorEl.textContent = err.message || "Erro ao conectar com o Mercado Pago.";
+          console.warn("[cafe] Erro ao iniciar pagamento:", err.message);
+          checkoutFailed = true;
+          checkoutButton = null;
           coffeeButtons.forEach((b) => (b.disabled = false));
-          btn.innerHTML = originalContent;
+          renderCafeCopy();
         }
       });
     });

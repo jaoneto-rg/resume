@@ -3,7 +3,7 @@
 
 <header class="topbar" aria-label="Navegacao principal">
   <div class="topbar-inner">
-    <nav class="topbar-nav">
+    <nav class="topbar-nav" id="topbarNav">
       <a href="#hero" data-i18n="nav.home">Inicio</a>
       <a href="#about" data-i18n="nav.about">About</a>
       <a href="#trajetoria" data-i18n="nav.journey">Trajetoria</a>
@@ -22,7 +22,9 @@
       <button type="button" class="lang-toggle" id="langToggle" aria-label="Alternar idioma">
         <span id="langLabel">PT</span>
       </button>
-      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
+      <button type="button" class="style-toggle" id="styleToggle">Pixelar</button>
+      <button type="button" class="menu-toggle" id="menuToggle" aria-label="Menu principal"
+        data-i18n-aria="nav.menu" aria-controls="topbarNav" aria-expanded="false">
         <span></span>
         <span></span>
         <span></span>

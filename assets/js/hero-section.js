@@ -8,6 +8,7 @@
       "nav.education": "Formação",
       "nav.projects": "Projetos",
       "nav.contact": "Contato",
+      "nav.menu": "Menu principal",
       "hero.subtitle.top": "Sou Desenvolvedor Full-Stack",
       "hero.subtitle.bottom": "& Mobile Engineer",
       "resume.eyebrow": "Resumo Profissional",
@@ -86,6 +87,8 @@
       "contact.links.title": "Links",
       "footer.tagline": "Full-Stack Developer & Mobile Engineer",
       "waves.label": "Ondas",
+      "style.pixel": "Pixelar",
+      "style.normal": "Modo normal",
       "comments.eyebrow": "Comentários",
       "comments.title": "O que dizem sobre mim",
       "comments.body": "Colegas, professores e clientes deixaram um comentário por aqui. Quer deixar o seu?",
@@ -115,6 +118,7 @@
       "nav.education": "Education",
       "nav.projects": "Projects",
       "nav.contact": "Contact",
+      "nav.menu": "Main menu",
       "hero.subtitle.top": "I'm a Full-Stack Developer",
       "hero.subtitle.bottom": "& Mobile Engineer",
       "resume.eyebrow": "Professional Summary",
@@ -195,6 +199,8 @@
       "contact.links.title": "Links",
       "footer.tagline": "Full-Stack Developer & Mobile Engineer",
       "waves.label": "Waves",
+      "style.pixel": "Pixelate",
+      "style.normal": "Normal mode",
       "comments.eyebrow": "Comments",
       "comments.title": "What people say about me",
       "comments.body": "Colleagues, professors and clients have left a comment here. Want to leave yours?",
@@ -232,6 +238,7 @@
     const waveToggle = mount.querySelector("#waveToggle");
     const langToggle = mount.querySelector("#langToggle");
     const langLabel = mount.querySelector("#langLabel");
+    const styleToggle = mount.querySelector("#styleToggle");
     const menuToggle = mount.querySelector("#menuToggle");
     const typedSubtitleTop = mount.querySelector("#typedSubtitleTop");
     const typedSubtitleBottom = mount.querySelector("#typedSubtitleBottom");
@@ -256,7 +263,7 @@
       constructor(width, height) {
         this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        this.renderer.setSize(width, height);
+        this.renderer.setSize(width, height, false);
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 20000);
         this.camera.position.z = 200;
@@ -319,7 +326,7 @@
       }
 
       updateSize(w, h) {
-        this.renderer.setSize(w, h);
+        this.renderer.setSize(w, h, false);
         this.camera.aspect = w / h;
         this.camera.updateProjectionMatrix();
       }
@@ -351,6 +358,12 @@
     }
 
     const i18n = window._i18n;
+
+    function updateStyleLabel() {
+      if (!styleToggle) return;
+      const dict = i18n[root.dataset.lang] || i18n.pt;
+      styleToggle.textContent = dict[root.dataset.displayStyle === "pixel" ? "style.normal" : "style.pixel"];
+    }
 
     function applyI18n(lang) {
       const dict = i18n[lang] || i18n.pt;
@@ -407,6 +420,7 @@
         langLabel.textContent = next === "en" ? "EN" : "PT";
       }
       applyI18n(next);
+      updateStyleLabel();
       window.dispatchEvent(new CustomEvent("site-language-change", { detail: { lang: next } }));
       computeAge();
       startTypingAnimation();
@@ -444,7 +458,7 @@
     }
 
     function initWorld() {
-      world = new World(window.innerWidth, window.innerHeight);
+      world = new World(worldContainer.clientWidth, worldContainer.clientHeight);
       const initialScroll = getScrollProgress();
       world.scrollY = initialScroll;
       world.targetScrollY = initialScroll;
@@ -459,7 +473,7 @@
 
     window.addEventListener("resize", function () {
       if (!world) return;
-      world.updateSize(window.innerWidth, window.innerHeight);
+      world.updateSize(worldContainer.clientWidth, worldContainer.clientHeight);
     });
 
     document.addEventListener("mousemove", function (event) {
@@ -480,11 +494,33 @@
     }
 
     if (menuToggle && topbar) {
+      const nav = topbar.querySelector(".topbar-nav");
       menuToggle.addEventListener("click", function () {
         const isOpen = topbar.classList.toggle("is-open");
         menuToggle.setAttribute("aria-expanded", String(isOpen));
       });
+      nav?.addEventListener("click", function (event) {
+        if (!event.target.closest("a")) return;
+        topbar.classList.remove("is-open");
+        menuToggle.setAttribute("aria-expanded", "false");
+      });
     }
+
+    document.addEventListener("click", function (event) {
+      if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      const link = event.target.closest('a[href^="#"]');
+      if (!link?.hash || (link.target && link.target !== "_self") || link.hasAttribute("download")) return;
+
+      const section = document.getElementById(link.hash.slice(1));
+      if (!section) return;
+      event.preventDefault();
+
+      if (window.location.hash !== link.hash) window.history.pushState(window.history.state, "", link.hash);
+      if (!section.hasAttribute("tabindex")) section.tabIndex = -1;
+      section.focus({ preventScroll: true });
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      section.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+    });
 
     if (waveToggle) {
       waveToggle.addEventListener("click", function () {
@@ -497,6 +533,18 @@
       langToggle.addEventListener("click", function () {
         const next = (root.dataset.lang || "pt") === "pt" ? "en" : "pt";
         setLang(next);
+      });
+    }
+
+    if (styleToggle) {
+      styleToggle.addEventListener("click", function () {
+        const next = root.dataset.displayStyle === "pixel" ? "normal" : "pixel";
+        root.dataset.displayStyle = next;
+        try {
+          localStorage.setItem("displayStyle", next);
+        } catch {}
+        updateStyleLabel();
+        window.dispatchEvent(new CustomEvent("site-style-change"));
       });
     }
 

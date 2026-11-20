@@ -133,6 +133,13 @@
   z-index: 1;
 }
 
+@media (max-width: 600px) {
+  .comment-card.carousel-card {
+    flex-basis: 88%;
+    padding: 1.25rem 1rem;
+  }
+}
+
 /* Avatar / Foto centralizada no topo */
 .comment-header {
   display: flex;
@@ -198,7 +205,7 @@
   background: var(--button-bg);
   color: var(--button-text);
   font-weight: 700;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.15rem;
   border: 2px solid var(--surface-border);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
@@ -207,7 +214,7 @@
 /* Nome e Papel do autor */
 .comment-name {
   margin: 0 0 0.2rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-main);
@@ -255,7 +262,7 @@
 
 .comment-message::before {
   content: "“";
-  font-family: "Space Grotesk", serif;
+  font-family: var(--font-ui);
   font-size: 1.25em;
   line-height: 0;
   color: var(--text-soft);
@@ -265,7 +272,7 @@
 
 .comment-message::after {
   content: "”";
-  font-family: "Space Grotesk", serif;
+  font-family: var(--font-ui);
   font-size: 1.25em;
   line-height: 0;
   color: var(--text-soft);
@@ -279,6 +286,8 @@
 
 .comment-dialog {
   width: min(92vw, 520px);
+  max-height: 90vh;
+  max-height: 90dvh;
   border: 1px solid var(--surface-border);
   border-radius: 18px;
   padding: 1.6rem;
@@ -286,6 +295,8 @@
   color: var(--text-main);
   box-shadow: var(--shadow);
   margin: auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .comment-dialog::backdrop {
@@ -307,7 +318,7 @@
 
 .comment-dialog-header h3 {
   margin: 0;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.25rem;
 }
 
@@ -348,7 +359,7 @@
 .comment-form input[type="url"],
 .comment-form input[type="file"],
 .comment-form textarea {
-  font: 400 0.95rem/1.4 "Manrope", sans-serif;
+  font: 400 0.95rem/1.4 var(--font-body);
   padding: 0.6rem 0.75rem;
   border-radius: 10px;
   border: 1px solid var(--surface-border);
@@ -398,7 +409,7 @@
 }
 
 .comment-btn-cancel {
-  font: 600 0.85rem/1 "Space Grotesk", sans-serif;
+  font: 600 0.85rem/1 var(--font-ui);
   padding: 0.55rem 1rem;
   border-radius: 999px;
   border: 1px solid var(--button-ghost-border, rgba(255, 255, 255, 0.18));
