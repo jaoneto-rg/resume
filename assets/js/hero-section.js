@@ -506,22 +506,6 @@
       });
     }
 
-    document.addEventListener("click", function (event) {
-      if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-      const link = event.target.closest('a[href^="#"]');
-      if (!link?.hash || (link.target && link.target !== "_self") || link.hasAttribute("download")) return;
-
-      const section = document.getElementById(link.hash.slice(1));
-      if (!section) return;
-      event.preventDefault();
-
-      if (window.location.hash !== link.hash) window.history.pushState(window.history.state, "", link.hash);
-      if (!section.hasAttribute("tabindex")) section.tabIndex = -1;
-      section.focus({ preventScroll: true });
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      section.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
-    });
-
     if (waveToggle) {
       waveToggle.addEventListener("click", function () {
         moodIndex = (moodIndex + 1) % wavePresets.length;
